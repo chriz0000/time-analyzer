@@ -100,8 +100,11 @@ Generate the optimized budget allocation.`;
     messages: [{ role: "user", content: userPrompt }],
   });
 
-  const text =
+  let text =
     message.content[0].type === "text" ? message.content[0].text : "";
+
+  // Strip markdown code fences if Claude wraps the JSON
+  text = text.replace(/^```(?:json)?\s*\n?/i, "").replace(/\n?```\s*$/i, "").trim();
 
   const result: AnalysisOutput = JSON.parse(text);
   return result;
