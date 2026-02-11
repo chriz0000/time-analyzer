@@ -95,8 +95,9 @@ export async function POST(request: NextRequest) {
     }
   } catch (error) {
     console.error("Budget analysis error:", error);
+    const message = error instanceof Error ? error.message : "Unknown error";
     return NextResponse.json(
-      { error: "Failed to analyze budget" },
+      { error: "Failed to analyze budget", detail: message },
       { status: 500 }
     );
   }
