@@ -1,13 +1,35 @@
 import { NextRequest, NextResponse } from "next/server";
 import { subscribeToConvertKit } from "@/lib/convertkit";
 
+const rateLimit = new Map<string, number[]>();
+const WINDOW_MS = 60_000;
+const MAX_REQUESTS = 5;
+
+function isRateLimited(ip: string): boolean {
+  const now = Date.now();
+  const timestamps = rateLimit.get(ip) ?? [];
+  const recent = timestamps.filter((t) => now - t < WINDOW_MS);
+  if (recent.length >= MAX_REQUESTS) return true;
+  recent.push(now);
+  rateLimit.set(ip, recent);
+  return false;
+}
+
 export async function POST(request: NextRequest) {
   try {
+    const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+    if (isRateLimited(ip)) {
+      return NextResponse.json(
+        { error: "Too many requests. Please try again later." },
+        { status: 429 }
+      );
+    }
+
     const body = await request.json();
 
-    if (!body.email) {
+    if (!body.email || typeof body.email !== "string" || !body.email.includes("@")) {
       return NextResponse.json(
-        { error: "Email is required" },
+        { error: "Valid email is required" },
         { status: 400 }
       );
     }
