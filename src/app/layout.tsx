@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 
 const inter = Inter({
@@ -17,6 +18,7 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://newage-longevity.vercel.app"),
   title: "Time Analyzer | New Age Longevity",
   description:
     "Discover your personalized longevity protocol based on the time you actually have. Free, science-backed recommendations in 2 minutes.",
@@ -25,6 +27,13 @@ export const metadata: Metadata = {
     description:
       "Discover your personalized longevity protocol based on the time you actually have.",
     type: "website",
+    siteName: "New Age Longevity",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Time Analyzer | New Age Longevity",
+    description:
+      "Discover your personalized longevity protocol based on the time you actually have.",
   },
 };
 
@@ -39,6 +48,7 @@ export default function RootLayout({
         className={`${inter.variable} ${jetbrainsMono.variable} font-sans antialiased`}
       >
         {children}
+        <Analytics />
       </body>
     </html>
   );

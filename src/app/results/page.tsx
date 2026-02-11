@@ -1,7 +1,7 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { useMemo, Suspense } from "react";
+import { useMemo, useState, useCallback, Suspense } from "react";
 import { analyzeProtocols, type QuizAnswers, type ScoredProtocol } from "@/lib/scoring";
 import type { Goal, FitnessLevel } from "@/data/protocols";
 import Link from "next/link";
@@ -157,18 +157,7 @@ function ResultsContent() {
       </section>
 
       {/* Share */}
-      <section className="max-w-[1080px] mx-auto px-6 py-12 text-center">
-        <p className="text-dim text-sm mb-2">
-          Know someone who could use a personalized longevity protocol?
-        </p>
-        <p className="text-dim/40 text-xs mb-5">It&apos;s free. It takes 2 minutes. Send them the link.</p>
-        <Link
-          href="/"
-          className="inline-block border-2 border-accent text-accent hover:bg-accent hover:text-primary font-bold text-sm px-8 py-3 rounded-2xl transition-colors tracking-tight"
-        >
-          Share the Quiz
-        </Link>
-      </section>
+      <ShareSection />
 
       {/* Footer */}
       <footer className="max-w-[1080px] mx-auto px-6 py-12">
@@ -290,6 +279,48 @@ function ProtocolCard({
       {/* Citation */}
       <p className="font-mono text-[10px] text-dim/40 mt-3">{protocol.citation}</p>
     </div>
+  );
+}
+
+function ShareSection() {
+  const [copied, setCopied] = useState(false);
+  const siteUrl = "https://newage-longevity.vercel.app";
+
+  const handleShare = useCallback(async () => {
+    if (typeof navigator !== "undefined" && navigator.share) {
+      try {
+        await navigator.share({
+          title: "New Age Longevity — Time Analyzer",
+          text: "Get your free personalized longevity protocol in 2 minutes.",
+          url: siteUrl,
+        });
+        return;
+      } catch {
+        // User cancelled or share failed — fall through to clipboard
+      }
+    }
+    try {
+      await navigator.clipboard.writeText(siteUrl);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // Clipboard not available
+    }
+  }, []);
+
+  return (
+    <section className="max-w-[1080px] mx-auto px-6 py-12 text-center">
+      <p className="text-dim text-sm mb-2">
+        Know someone who could use a personalized longevity protocol?
+      </p>
+      <p className="text-dim/40 text-xs mb-5">It&apos;s free. It takes 2 minutes. Send them the link.</p>
+      <button
+        onClick={handleShare}
+        className="inline-block border-2 border-accent text-accent hover:bg-accent hover:text-primary font-bold text-sm px-8 py-3 rounded-2xl transition-colors tracking-tight"
+      >
+        {copied ? "Link Copied!" : "Share the Quiz"}
+      </button>
+    </section>
   );
 }
 
