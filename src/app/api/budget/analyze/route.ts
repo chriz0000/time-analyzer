@@ -93,7 +93,7 @@ export async function POST(request: NextRequest) {
           "anthropic-version": "2023-06-01",
         },
         body: JSON.stringify({
-          model: "claude-sonnet-4-5-20250929",
+          model: "claude-haiku-4-5-20251001",
           max_tokens: 4096,
           stream: true,
           system: systemPrompt,
@@ -149,7 +149,7 @@ export async function POST(request: NextRequest) {
         age_range: input.ageRange,
         result: fullResult,
         is_premium: isPremium,
-        claude_model: "claude-sonnet-4-5-20250929",
+        claude_model: "claude-haiku-4-5-20251001",
       }).then(() => {});
 
       if (!isPremium) {

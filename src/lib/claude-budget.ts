@@ -95,7 +95,15 @@ function buildLeanInvestments(input: BudgetAnalysisInput) {
 
   return investments
     .filter((inv) => !input.currentSpending.includes(inv.id))
-    .filter((inv) => tierOrder.indexOf(inv.tier) <= maxTierIndex + 1) // include one tier above for aspirational
+    .filter((inv) => tierOrder.indexOf(inv.tier) <= maxTierIndex + 1)
+    .sort((a, b) => {
+      // Prioritize by goal alignment + evidence strength
+      const goalKey = input.primaryGoal as keyof typeof a.goalAlignment;
+      const aScore = (a.goalAlignment[goalKey] || 5) + a.evidenceStrength;
+      const bScore = (b.goalAlignment[goalKey] || 5) + b.evidenceStrength;
+      return bScore - aScore;
+    })
+    .slice(0, 25) // Cap at 25 most relevant items for speed
     .map((inv) => ({
       id: inv.id,
       name: inv.name,
