@@ -70,6 +70,88 @@ OUTPUT: Return ONLY valid JSON matching this exact schema (no markdown, no code 
   "totalMonthlyCost": 187
 }`;
 
+function buildLeanInvestments(input: BudgetAnalysisInput) {
+  // Pre-filter by budget tier to reduce prompt size
+  const maxTier = input.monthlyBudget >= 500 ? "premium"
+    : input.monthlyBudget >= 200 ? "mid"
+    : input.monthlyBudget >= 50 ? "budget"
+    : "free";
+
+  const tierOrder = ["free", "budget", "mid", "premium"];
+  const maxTierIndex = tierOrder.indexOf(maxTier);
+
+  return investments
+    .filter((inv) => !input.currentSpending.includes(inv.id))
+    .filter((inv) => tierOrder.indexOf(inv.tier) <= maxTierIndex + 1) // include one tier above for aspirational
+    .map((inv) => ({
+      id: inv.id,
+      name: inv.name,
+      cat: inv.category,
+      $mo: inv.costPerMonth,
+      ev: inv.evidenceStrength,
+      ce: inv.costEffectiveness,
+      ease: inv.implementationEase,
+      ttb: inv.timeToBenefit,
+      syn: inv.synergies,
+      goal: inv.goalAlignment,
+    }));
+}
+
+export async function analyzeBudgetStream(
+  input: BudgetAnalysisInput
+): Promise<ReadableStream> {
+  const anthropic = new Anthropic({
+    apiKey: process.env.ANTHROPIC_API_KEY,
+  });
+
+  const available = buildLeanInvestments(input);
+
+  const userPrompt = `INVESTMENTS (${available.length} items, fields: id,name,cat=category,$mo=costPerMonth,ev=evidenceStrength,ce=costEffectiveness,ease=implementationEase,ttb=timeToBenefit,syn=synergies,goal=goalAlignment):
+${JSON.stringify(available)}
+
+USER: budget=$${input.monthlyBudget}/mo, goal=${input.primaryGoal}, spending=[${input.currentSpending.join(",")}], age=${input.ageRange || "unspecified"}
+
+Generate the optimized budget allocation as JSON.`;
+
+  const stream = anthropic.messages.stream({
+    model: "claude-sonnet-4-5-20250929",
+    max_tokens: 4096,
+    system: SYSTEM_PROMPT,
+    messages: [{ role: "user", content: userPrompt }],
+  });
+
+  // Collect streamed text chunks and return as a ReadableStream
+  const encoder = new TextEncoder();
+  let fullText = "";
+
+  return new ReadableStream({
+    async start(controller) {
+      try {
+        for await (const event of stream) {
+          if (event.type === "content_block_delta" && event.delta.type === "text_delta") {
+            fullText += event.delta.text;
+            // Send a keep-alive space to prevent timeout
+            controller.enqueue(encoder.encode(" "));
+          }
+        }
+
+        // Strip code fences and parse
+        fullText = fullText.replace(/^```(?:json)?\s*\n?/i, "").replace(/\n?```\s*$/i, "").trim();
+        const result: AnalysisOutput = JSON.parse(fullText);
+
+        // Send the actual JSON result
+        controller.enqueue(encoder.encode(JSON.stringify(result)));
+        controller.close();
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : "Stream error";
+        controller.enqueue(encoder.encode(JSON.stringify({ error: "Failed to analyze budget", detail: msg })));
+        controller.close();
+      }
+    },
+  });
+}
+
+// Non-streaming version for local dev / long-timeout environments
 export async function analyzeBudget(
   input: BudgetAnalysisInput
 ): Promise<AnalysisOutput> {
@@ -77,35 +159,14 @@ export async function analyzeBudget(
     apiKey: process.env.ANTHROPIC_API_KEY,
   });
 
-  // Filter investments to exclude what user already has, send lean data
-  const available = investments
-    .filter((inv) => !input.currentSpending.includes(inv.id))
-    .map((inv) => ({
-      id: inv.id,
-      name: inv.name,
-      category: inv.category,
-      tier: inv.tier,
-      costPerMonth: inv.costPerMonth,
-      costUpfront: inv.costUpfront,
-      evidenceStrength: inv.evidenceStrength,
-      evidenceType: inv.evidenceType,
-      costEffectiveness: inv.costEffectiveness,
-      implementationEase: inv.implementationEase,
-      timeToBenefit: inv.timeToBenefit,
-      synergies: inv.synergies,
-      goalAlignment: inv.goalAlignment,
-    }));
+  const available = buildLeanInvestments(input);
 
-  const userPrompt = `INVESTMENT DATABASE:
+  const userPrompt = `INVESTMENTS (${available.length} items, fields: id,name,cat=category,$mo=costPerMonth,ev=evidenceStrength,ce=costEffectiveness,ease=implementationEase,ttb=timeToBenefit,syn=synergies,goal=goalAlignment):
 ${JSON.stringify(available)}
 
-USER PROFILE:
-- Monthly budget: $${input.monthlyBudget}
-- Currently spending on: ${input.currentSpending.length > 0 ? input.currentSpending.join(", ") : "Nothing yet"}
-- Primary goal: ${input.primaryGoal}
-- Age range: ${input.ageRange || "Not specified"}
+USER: budget=$${input.monthlyBudget}/mo, goal=${input.primaryGoal}, spending=[${input.currentSpending.join(",")}], age=${input.ageRange || "unspecified"}
 
-Generate the optimized budget allocation.`;
+Generate the optimized budget allocation as JSON.`;
 
   const message = await anthropic.messages.create({
     model: "claude-sonnet-4-5-20250929",

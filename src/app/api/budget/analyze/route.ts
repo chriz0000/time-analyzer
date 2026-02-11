@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAccessToken, getAuthUser, createSupabaseClient } from "@/lib/supabase";
-import { analyzeBudget, stripForFreeUser, type BudgetAnalysisInput } from "@/lib/claude-budget";
+import { analyzeBudgetStream, stripForFreeUser, type BudgetAnalysisInput, type AnalysisOutput } from "@/lib/claude-budget";
 
 export const maxDuration = 60;
 
@@ -66,8 +66,33 @@ export async function POST(request: NextRequest) {
       ageRange: body.ageRange,
     };
 
-    // Call Claude
-    const fullResult = await analyzeBudget(input);
+    // Use streaming to avoid Vercel timeout
+    const stream = await analyzeBudgetStream(input);
+
+    // Collect the full streamed response
+    const reader = stream.getReader();
+    const chunks: Uint8Array[] = [];
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      if (value) chunks.push(value);
+    }
+
+    const decoder = new TextDecoder();
+    const rawText = chunks.map((c) => decoder.decode(c)).join("").trim();
+
+    // The stream sends spaces as keep-alive then the JSON at the end
+    // Extract the JSON part (last occurrence of { to })
+    const jsonStart = rawText.lastIndexOf('{"');
+    if (jsonStart === -1) {
+      return NextResponse.json(
+        { error: "Failed to analyze budget", detail: "No JSON in response" },
+        { status: 500 }
+      );
+    }
+
+    const jsonText = rawText.slice(jsonStart);
+    const fullResult: AnalysisOutput = JSON.parse(jsonText);
 
     // Save to database
     await supabase.from("analyses").insert({
