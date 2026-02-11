@@ -77,13 +77,27 @@ export async function analyzeBudget(
     apiKey: process.env.ANTHROPIC_API_KEY,
   });
 
-  // Filter investments to exclude what user already has
-  const available = investments.filter(
-    (inv) => !input.currentSpending.includes(inv.id)
-  );
+  // Filter investments to exclude what user already has, send lean data
+  const available = investments
+    .filter((inv) => !input.currentSpending.includes(inv.id))
+    .map((inv) => ({
+      id: inv.id,
+      name: inv.name,
+      category: inv.category,
+      tier: inv.tier,
+      costPerMonth: inv.costPerMonth,
+      costUpfront: inv.costUpfront,
+      evidenceStrength: inv.evidenceStrength,
+      evidenceType: inv.evidenceType,
+      costEffectiveness: inv.costEffectiveness,
+      implementationEase: inv.implementationEase,
+      timeToBenefit: inv.timeToBenefit,
+      synergies: inv.synergies,
+      goalAlignment: inv.goalAlignment,
+    }));
 
   const userPrompt = `INVESTMENT DATABASE:
-${JSON.stringify(available, null, 2)}
+${JSON.stringify(available)}
 
 USER PROFILE:
 - Monthly budget: $${input.monthlyBudget}

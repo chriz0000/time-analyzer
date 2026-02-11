@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { getAccessToken, getAuthUser, createSupabaseClient } from "@/lib/supabase";
 import { analyzeBudget, stripForFreeUser, type BudgetAnalysisInput } from "@/lib/claude-budget";
 
+export const maxDuration = 60;
+
 const rateLimit = new Map<string, number[]>();
 const WINDOW_MS = 3600_000; // 1 hour
 const MAX_PREMIUM = 3;
