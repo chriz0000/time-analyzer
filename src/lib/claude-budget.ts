@@ -70,6 +70,19 @@ OUTPUT: Return ONLY valid JSON matching this exact schema (no markdown, no code 
   "totalMonthlyCost": 187
 }`;
 
+export function buildAnalysisPrompt(input: BudgetAnalysisInput) {
+  const available = buildLeanInvestments(input);
+  return {
+    systemPrompt: SYSTEM_PROMPT,
+    userPrompt: `INVESTMENTS (${available.length} items, fields: id,name,cat=category,$mo=costPerMonth,ev=evidenceStrength,ce=costEffectiveness,ease=implementationEase,ttb=timeToBenefit,syn=synergies,goal=goalAlignment):
+${JSON.stringify(available)}
+
+USER: budget=$${input.monthlyBudget}/mo, goal=${input.primaryGoal}, spending=[${input.currentSpending.join(",")}], age=${input.ageRange || "unspecified"}
+
+Generate the optimized budget allocation as JSON.`,
+  };
+}
+
 function buildLeanInvestments(input: BudgetAnalysisInput) {
   // Pre-filter by budget tier to reduce prompt size
   const maxTier = input.monthlyBudget >= 500 ? "premium"
