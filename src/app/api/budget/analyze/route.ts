@@ -68,10 +68,14 @@ export async function POST(request: NextRequest) {
   // Build the prompt
   const body = await request.json();
   const input: BudgetAnalysisInput = {
-    monthlyBudget: Number(body.monthlyBudget) || 100,
-    currentSpending: Array.isArray(body.currentSpending) ? body.currentSpending : [],
-    primaryGoal: body.primaryGoal || "lifespan",
-    ageRange: body.ageRange,
+    monthlyBudget: Math.max(0, Math.min(Number(body.monthlyBudget) || 100, 10000)),
+    currentSpending: Array.isArray(body.currentSpending)
+      ? body.currentSpending.filter((id: unknown) => typeof id === "string" && id.length < 100)
+      : [],
+    primaryGoal: ["lifespan", "performance", "disease_prevention", "aesthetics"].includes(body.primaryGoal)
+      ? body.primaryGoal
+      : "lifespan",
+    ageRange: typeof body.ageRange === "string" ? body.ageRange.slice(0, 10) : undefined,
   };
 
   const { systemPrompt, userPrompt } = buildAnalysisPrompt(input);
@@ -85,6 +89,12 @@ export async function POST(request: NextRequest) {
   (async () => {
     let fullText = "";
     try {
+      if (!process.env.ANTHROPIC_API_KEY) {
+        await writer.write(encoder.encode(JSON.stringify({ error: "Server configuration error" })));
+        await writer.close();
+        return;
+      }
+
       const response = await fetch("https://api.anthropic.com/v1/messages", {
         method: "POST",
         headers: {
@@ -102,8 +112,8 @@ export async function POST(request: NextRequest) {
       });
 
       if (!response.ok) {
-        const err = await response.text();
-        await writer.write(encoder.encode(JSON.stringify({ error: "Claude API error", detail: err })));
+        console.error("Claude API error:", response.status);
+        await writer.write(encoder.encode(JSON.stringify({ error: "Analysis service unavailable" })));
         await writer.close();
         return;
       }
@@ -166,13 +176,17 @@ export async function POST(request: NextRequest) {
         result: fullResult,
         is_premium: isPremium,
         claude_model: "claude-haiku-4-5-20251001",
-      }).then(() => {});
+      }).then(({ error }) => {
+        if (error) console.error("Failed to save analysis:", error.message);
+      });
 
       if (!isPremium) {
         supabase.from("profiles")
           .update({ free_analysis_used: true })
           .eq("id", userId)
-          .then(() => {});
+          .then(({ error }) => {
+            if (error) console.error("Failed to update free_analysis_used:", error.message);
+          });
       }
 
       // Send the final JSON result
