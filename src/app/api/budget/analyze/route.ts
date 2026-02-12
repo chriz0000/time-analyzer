@@ -110,30 +110,46 @@ export async function POST(request: NextRequest) {
 
       const reader = response.body!.getReader();
       const decoder = new TextDecoder();
+      let buffer = "";
 
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
 
-        const chunk = decoder.decode(value, { stream: true });
-        // Parse SSE events from Anthropic streaming API
-        const lines = chunk.split("\n");
-        for (const line of lines) {
-          if (line.startsWith("data: ")) {
-            const data = line.slice(6);
+        buffer += decoder.decode(value, { stream: true });
+
+        // Process complete SSE events (separated by double newlines)
+        const parts = buffer.split("\n");
+        // Keep the last part as it may be incomplete
+        buffer = parts.pop() || "";
+
+        for (const line of parts) {
+          const trimmed = line.trim();
+          if (trimmed.startsWith("data: ")) {
+            const data = trimmed.slice(6);
             if (data === "[DONE]") continue;
             try {
               const event = JSON.parse(data);
               if (event.type === "content_block_delta" && event.delta?.text) {
                 fullText += event.delta.text;
-                // Send a space to keep the connection alive
                 await writer.write(encoder.encode(" "));
               }
             } catch {
-              // Skip non-JSON lines
+              // Incomplete JSON, will be handled in next chunk
             }
           }
         }
+      }
+
+      // Process any remaining buffer
+      if (buffer.trim().startsWith("data: ")) {
+        const data = buffer.trim().slice(6);
+        try {
+          const event = JSON.parse(data);
+          if (event.type === "content_block_delta" && event.delta?.text) {
+            fullText += event.delta.text;
+          }
+        } catch {}
       }
 
       // Parse the collected response
