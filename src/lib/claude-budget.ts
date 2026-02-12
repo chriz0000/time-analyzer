@@ -57,6 +57,9 @@ RULES:
 - freeOptimizations: ALL $0 items not in currentSpending
 - budgetBreakdown: percentage allocation by category (must sum to 100)
 - roiProjections: realistic, specific expected outcomes at each timeframe
+- Keep reasoning to 1-2 sentences max. Be concise.
+- Keep implementationTip to 1 sentence.
+- Keep roiProjections to 1-2 sentences each.
 
 OUTPUT: Return ONLY valid JSON matching this exact schema (no markdown, no code fences):
 {
