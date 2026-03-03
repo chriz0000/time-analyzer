@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAccessToken, getAuthUser, createSupabaseClient } from "@/lib/supabase";
-import { type BudgetAnalysisInput, type AnalysisOutput } from "@/lib/claude-budget";
-import { buildAnalysisPrompt, resolveInvestment } from "@/lib/claude-budget";
+import { type BudgetAnalysisInput } from "@/lib/claude-budget";
+import { buildAnalysisPrompt, normalizeOutput } from "@/lib/claude-budget";
 
 export const maxDuration = 60;
 
@@ -20,7 +20,6 @@ function isRateLimited(userId: string): boolean {
 }
 
 export async function POST(request: NextRequest) {
-  // Auth + profile checks (must complete within first few seconds)
   let token: string | null;
   let userId: string;
   let supabase: ReturnType<typeof createSupabaseClient>;
@@ -36,20 +35,18 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Invalid token" }, { status: 401 });
     }
     userId = user.id;
-
     supabase = createSupabaseClient(token);
 
     if (isRateLimited(user.id)) {
       return NextResponse.json(
         { error: "Rate limit exceeded. Max 5 analyses per hour." },
-        { status: 429 }
+        { status: 429 },
       );
     }
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: "Auth failed" }, { status: 401 });
   }
 
-  // Build the prompt
   const body = await request.json();
   const input: BudgetAnalysisInput = {
     monthlyBudget: Math.max(0, Math.min(Number(body.monthlyBudget) || 100, 10000)),
@@ -74,12 +71,10 @@ export async function POST(request: NextRequest) {
 
   const { systemPrompt, userPrompt } = buildAnalysisPrompt(input);
 
-  // Stream the response to keep the connection alive
   const encoder = new TextEncoder();
   const stream = new TransformStream();
   const writer = stream.writable.getWriter();
 
-  // Start the Claude call in the background while we return the stream
   (async () => {
     let fullText = "";
     try {
@@ -121,10 +116,7 @@ export async function POST(request: NextRequest) {
         if (done) break;
 
         buffer += decoder.decode(value, { stream: true });
-
-        // Process complete SSE events (separated by double newlines)
         const parts = buffer.split("\n");
-        // Keep the last part as it may be incomplete
         buffer = parts.pop() || "";
 
         for (const line of parts) {
@@ -139,13 +131,12 @@ export async function POST(request: NextRequest) {
                 await writer.write(encoder.encode(" "));
               }
             } catch {
-              // Incomplete JSON, will be handled in next chunk
+              // Incomplete JSON chunk
             }
           }
         }
       }
 
-      // Process any remaining buffer
       if (buffer.trim().startsWith("data: ")) {
         const data = buffer.trim().slice(6);
         try {
@@ -156,43 +147,38 @@ export async function POST(request: NextRequest) {
         } catch {}
       }
 
-      // Parse the collected response
+      // Parse Claude's response
       fullText = fullText.replace(/^```(?:json)?\s*\n?/i, "").replace(/\n?```\s*$/i, "").trim();
-      const fullResult: AnalysisOutput = JSON.parse(fullText);
+      const rawResult = JSON.parse(fullText);
 
-      // Server-side safety: ensure paid items exist in immediatePriorities
-      // If Claude returned empty/free-only, merge from month2 + future
-      const allPaid = [
-        ...(fullResult.immediatePriorities ?? []),
-        ...(fullResult.month2Additions ?? []),
-        ...(fullResult.futureOptimizations ?? []),
-      ].filter((item) => {
-        const inv = resolveInvestment(item.investmentId);
-        return inv && inv.costPerMonth > 0;
-      });
-
-      if (allPaid.length === 0 && input.monthlyBudget >= 50) {
-        // Claude completely failed to recommend paid items — log for debugging
-        console.error(`Analysis returned 0 paid items for $${input.monthlyBudget} budget. immediatePriorities: ${fullResult.immediatePriorities?.length ?? 0}, month2: ${fullResult.month2Additions?.length ?? 0}, future: ${fullResult.futureOptimizations?.length ?? 0}, free: ${fullResult.freeOptimizations?.length ?? 0}`);
-      }
-
-      // Merge all phased items into immediatePriorities
-      const seen = new Set((fullResult.immediatePriorities ?? []).map((i) => i.investmentId));
-      for (const item of [...(fullResult.month2Additions ?? []), ...(fullResult.futureOptimizations ?? [])]) {
-        if (!seen.has(item.investmentId)) {
-          seen.add(item.investmentId);
-          fullResult.immediatePriorities.push(item);
+      // Normalize into the app's expected shape
+      // Handle both old format (immediatePriorities) and new format (protocol)
+      let result;
+      if (rawResult.protocol) {
+        result = normalizeOutput(rawResult, input.monthlyBudget);
+      } else {
+        // Fallback: Claude returned old format — merge phased arrays
+        result = rawResult;
+        const seen = new Set((result.immediatePriorities ?? []).map((i: { investmentId: string }) => i.investmentId));
+        for (const item of [...(result.month2Additions ?? []), ...(result.futureOptimizations ?? [])]) {
+          if (!seen.has(item.investmentId)) {
+            seen.add(item.investmentId);
+            result.immediatePriorities.push(item);
+          }
+        }
+        result.immediatePriorities?.forEach((item: { rank: number }, i: number) => { item.rank = i + 1; });
+        result.month2Additions = [];
+        result.futureOptimizations = [];
+        const minTarget = input.monthlyBudget * 0.9;
+        if ((result.totalMonthlyCost ?? 0) < minTarget) {
+          result.totalMonthlyCost = Math.round(minTarget);
         }
       }
-      fullResult.immediatePriorities.forEach((item, i) => { item.rank = i + 1; });
-      fullResult.month2Additions = [];
-      fullResult.futureOptimizations = [];
 
-      // Ensure totalMonthlyCost reflects at least 90% of budget
-      const minTarget = input.monthlyBudget * 0.9;
-      if (fullResult.totalMonthlyCost < minTarget) {
-        fullResult.totalMonthlyCost = Math.round(minTarget);
-      }
+      // Log for debugging
+      const paidCount = (result.immediatePriorities ?? []).length;
+      const freeCount = (result.freeOptimizations ?? []).length;
+      console.log(`Analysis: $${input.monthlyBudget} budget → ${paidCount} paid, ${freeCount} free, total $${result.totalMonthlyCost}`);
 
       // Save to database
       const { error: insertErr } = await supabase.from("analyses").insert({
@@ -201,18 +187,17 @@ export async function POST(request: NextRequest) {
         current_spending: input.currentSpending,
         primary_goal: input.primaryGoal,
         age_range: input.ageRange,
-        result: fullResult,
+        result,
         is_premium: false,
         claude_model: "claude-haiku-4-5-20251001",
       });
       if (insertErr) console.error("Failed to save analysis:", insertErr.message);
 
-      // Send the final JSON result
-      const result = fullResult;
       await writer.write(encoder.encode("\n" + JSON.stringify(result)));
       await writer.close();
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Unknown error";
+      console.error("Analysis error:", msg);
       try {
         await writer.write(encoder.encode(JSON.stringify({ error: "Failed to analyze budget", detail: msg })));
         await writer.close();
