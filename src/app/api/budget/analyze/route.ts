@@ -1,20 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAccessToken, getAuthUser, createSupabaseClient } from "@/lib/supabase";
-import { stripForFreeUser, type BudgetAnalysisInput, type AnalysisOutput } from "@/lib/claude-budget";
-import { buildAnalysisPrompt } from "@/lib/claude-budget";
+import { type BudgetAnalysisInput, type AnalysisOutput } from "@/lib/claude-budget";
+import { buildAnalysisPrompt, resolveInvestment } from "@/lib/claude-budget";
 
 export const maxDuration = 60;
 
 const rateLimit = new Map<string, number[]>();
 const WINDOW_MS = 3600_000;
-const MAX_PREMIUM = 3;
+const MAX_PER_HOUR = 5;
 
-function isRateLimited(userId: string, isPremium: boolean): boolean {
-  if (!isPremium) return false;
+function isRateLimited(userId: string): boolean {
   const now = Date.now();
   const timestamps = rateLimit.get(userId) ?? [];
   const recent = timestamps.filter((t) => now - t < WINDOW_MS);
-  if (recent.length >= MAX_PREMIUM) return true;
+  if (recent.length >= MAX_PER_HOUR) return true;
   recent.push(now);
   rateLimit.set(userId, recent);
   return false;
@@ -24,7 +23,6 @@ export async function POST(request: NextRequest) {
   // Auth + profile checks (must complete within first few seconds)
   let token: string | null;
   let userId: string;
-  let isPremium: boolean;
   let supabase: ReturnType<typeof createSupabaseClient>;
 
   try {
@@ -40,24 +38,10 @@ export async function POST(request: NextRequest) {
     userId = user.id;
 
     supabase = createSupabaseClient(token);
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("subscription_status, free_analysis_used")
-      .eq("id", user.id)
-      .single();
 
-    isPremium = profile?.subscription_status === "premium";
-
-    if (!isPremium && profile?.free_analysis_used) {
+    if (isRateLimited(user.id)) {
       return NextResponse.json(
-        { error: "Free analysis already used. Upgrade to premium for unlimited analyses.", isLocked: true },
-        { status: 403 }
-      );
-    }
-
-    if (isRateLimited(user.id, isPremium)) {
-      return NextResponse.json(
-        { error: "Rate limit exceeded. Max 3 analyses per hour." },
+        { error: "Rate limit exceeded. Max 5 analyses per hour." },
         { status: 429 }
       );
     }
@@ -75,7 +59,17 @@ export async function POST(request: NextRequest) {
     primaryGoal: ["lifespan", "performance", "disease_prevention", "aesthetics"].includes(body.primaryGoal)
       ? body.primaryGoal
       : "lifespan",
+    sex: ["male", "female", "unspecified"].includes(body.sex) ? body.sex : undefined,
     ageRange: typeof body.ageRange === "string" ? body.ageRange.slice(0, 10) : undefined,
+    activityLevel: ["low", "moderate", "high"].includes(body.activityLevel) ? body.activityLevel : undefined,
+    weight: typeof body.weight === "string" ? body.weight.slice(0, 5).replace(/[^0-9]/g, "") || undefined : undefined,
+    height: typeof body.height === "string" ? body.height.slice(0, 5).replace(/[^0-9]/g, "") || undefined : undefined,
+    useMetric: body.useMetric === true,
+    sleepQuality: ["poor", "fair", "good"].includes(body.sleepQuality) ? body.sleepQuality : undefined,
+    dietType: ["standard", "plant_based", "keto_low_carb", "mediterranean"].includes(body.dietType) ? body.dietType : undefined,
+    healthConcerns: Array.isArray(body.healthConcerns)
+      ? body.healthConcerns.filter((c: unknown) => typeof c === "string" && c.length < 50).slice(0, 15)
+      : [],
   };
 
   const { systemPrompt, userPrompt } = buildAnalysisPrompt(input);
@@ -166,31 +160,55 @@ export async function POST(request: NextRequest) {
       fullText = fullText.replace(/^```(?:json)?\s*\n?/i, "").replace(/\n?```\s*$/i, "").trim();
       const fullResult: AnalysisOutput = JSON.parse(fullText);
 
-      // Save to database (fire and forget)
-      supabase.from("analyses").insert({
+      // Server-side safety: ensure paid items exist in immediatePriorities
+      // If Claude returned empty/free-only, merge from month2 + future
+      const allPaid = [
+        ...(fullResult.immediatePriorities ?? []),
+        ...(fullResult.month2Additions ?? []),
+        ...(fullResult.futureOptimizations ?? []),
+      ].filter((item) => {
+        const inv = resolveInvestment(item.investmentId);
+        return inv && inv.costPerMonth > 0;
+      });
+
+      if (allPaid.length === 0 && input.monthlyBudget >= 50) {
+        // Claude completely failed to recommend paid items — log for debugging
+        console.error(`Analysis returned 0 paid items for $${input.monthlyBudget} budget. immediatePriorities: ${fullResult.immediatePriorities?.length ?? 0}, month2: ${fullResult.month2Additions?.length ?? 0}, future: ${fullResult.futureOptimizations?.length ?? 0}, free: ${fullResult.freeOptimizations?.length ?? 0}`);
+      }
+
+      // Merge all phased items into immediatePriorities
+      const seen = new Set((fullResult.immediatePriorities ?? []).map((i) => i.investmentId));
+      for (const item of [...(fullResult.month2Additions ?? []), ...(fullResult.futureOptimizations ?? [])]) {
+        if (!seen.has(item.investmentId)) {
+          seen.add(item.investmentId);
+          fullResult.immediatePriorities.push(item);
+        }
+      }
+      fullResult.immediatePriorities.forEach((item, i) => { item.rank = i + 1; });
+      fullResult.month2Additions = [];
+      fullResult.futureOptimizations = [];
+
+      // Ensure totalMonthlyCost reflects at least 90% of budget
+      const minTarget = input.monthlyBudget * 0.9;
+      if (fullResult.totalMonthlyCost < minTarget) {
+        fullResult.totalMonthlyCost = Math.round(minTarget);
+      }
+
+      // Save to database
+      const { error: insertErr } = await supabase.from("analyses").insert({
         user_id: userId,
         monthly_budget: input.monthlyBudget,
         current_spending: input.currentSpending,
         primary_goal: input.primaryGoal,
         age_range: input.ageRange,
         result: fullResult,
-        is_premium: isPremium,
+        is_premium: false,
         claude_model: "claude-haiku-4-5-20251001",
-      }).then(({ error }) => {
-        if (error) console.error("Failed to save analysis:", error.message);
       });
-
-      if (!isPremium) {
-        supabase.from("profiles")
-          .update({ free_analysis_used: true })
-          .eq("id", userId)
-          .then(({ error }) => {
-            if (error) console.error("Failed to update free_analysis_used:", error.message);
-          });
-      }
+      if (insertErr) console.error("Failed to save analysis:", insertErr.message);
 
       // Send the final JSON result
-      const result = isPremium ? fullResult : stripForFreeUser(fullResult);
+      const result = fullResult;
       await writer.write(encoder.encode("\n" + JSON.stringify(result)));
       await writer.close();
     } catch (err) {
