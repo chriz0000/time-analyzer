@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
     const supabase = createSupabaseClient(token);
     const { data: analyses, error } = await supabase
       .from("analyses")
-      .select("id, created_at, monthly_budget, primary_goal, is_premium, result")
+      .select("id, created_at, monthly_budget, primary_goal, result")
       .eq("user_id", user.id)
       .order("created_at", { ascending: false })
       .limit(20);
@@ -31,7 +31,6 @@ export async function GET(request: NextRequest) {
       createdAt: a.created_at,
       monthlyBudget: a.monthly_budget,
       primaryGoal: a.primary_goal,
-      isPremium: a.is_premium,
       totalMonthlyCost: (a.result as Record<string, unknown>)?.totalMonthlyCost,
       protocolCount:
         ((a.result as Record<string, unknown[]>)?.immediatePriorities?.length || 0) +

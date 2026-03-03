@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAccessToken, getAuthUser, createSupabaseClient } from "@/lib/supabase";
-import { getCustomerInfo } from "@/lib/revenuecat";
 
 export async function POST(request: NextRequest) {
   try {
@@ -16,18 +15,6 @@ export async function POST(request: NextRequest) {
 
     const supabase = createSupabaseClient(token);
 
-    // Only sync with RevenueCat if it's configured
-    const customerInfo = await getCustomerInfo(user.id);
-    if (process.env.REVENUECAT_API_KEY && customerInfo) {
-      await supabase
-        .from("profiles")
-        .update({
-          subscription_status: customerInfo.isPremium ? "premium" : "free",
-          subscription_expires_at: customerInfo.expiresAt,
-        })
-        .eq("id", user.id);
-    }
-
     // Get full profile
     const { data: profile } = await supabase
       .from("profiles")
@@ -35,12 +22,11 @@ export async function POST(request: NextRequest) {
       .eq("id", user.id)
       .single();
 
-    const isPremium = profile?.subscription_status === "premium";
-
+    // Always return isPremium: true so older frontend builds don't break
     return NextResponse.json({
-      isPremium,
-      expiresAt: profile?.subscription_expires_at ?? null,
-      freeAnalysisUsed: profile?.free_analysis_used ?? false,
+      isPremium: true,
+      expiresAt: null,
+      freeAnalysisUsed: false,
       profile,
     });
   } catch {

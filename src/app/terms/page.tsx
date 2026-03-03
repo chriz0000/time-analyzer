@@ -188,9 +188,7 @@ export default function TermsOfService() {
               </li>
               <li className="flex items-start gap-3">
                 <span className="text-accent mt-1.5 text-xs">&#9670;</span>
-                You will receive one free analysis upon account creation;
-                thereafter, a subscription is required for continued access to
-                analysis features
+                All features are available for free upon account creation
               </li>
             </ul>
             <p className="text-dim leading-relaxed mt-4">
@@ -199,48 +197,18 @@ export default function TermsOfService() {
             </p>
           </div>
 
-          {/* 6. Subscriptions */}
+          {/* 6. Pricing */}
           <div>
             <h2 className="text-2xl font-bold text-secondary tracking-tight mb-4">
               <span className="font-mono text-accent mr-3">06.</span>
-              Subscriptions &amp; Billing
+              Pricing
             </h2>
-            <p className="text-dim leading-relaxed mb-4">
-              Prova offers a subscription plan at{" "}
-              <span className="text-secondary font-semibold">$9.99 per month</span>,
-              billed through the Apple App Store or Google Play Store. By
-              subscribing, you agree to the following:
+            <p className="text-dim leading-relaxed">
+              Prova is free to use. All analysis features, protocol tracking,
+              and recommendations are available at no cost. The app is
+              monetized through affiliate links on recommended products. See
+              Section 09 (Affiliate Links &amp; Commissions) for details.
             </p>
-            <ul className="space-y-2 text-dim leading-relaxed list-none">
-              <li className="flex items-start gap-3">
-                <span className="text-accent mt-1.5 text-xs">&#9670;</span>
-                New subscribers are eligible for a 7-day free trial. You will not
-                be charged during the trial period
-              </li>
-              <li className="flex items-start gap-3">
-                <span className="text-accent mt-1.5 text-xs">&#9670;</span>
-                After the trial period, your subscription will automatically renew
-                at $9.99/month unless cancelled before the end of the current
-                billing period
-              </li>
-              <li className="flex items-start gap-3">
-                <span className="text-accent mt-1.5 text-xs">&#9670;</span>
-                You may cancel your subscription at any time through your Apple App
-                Store or Google Play Store account settings
-              </li>
-              <li className="flex items-start gap-3">
-                <span className="text-accent mt-1.5 text-xs">&#9670;</span>
-                Refunds are handled by Apple or Google in accordance with their
-                respective refund policies. New Age Longevity does not process
-                refunds directly
-              </li>
-              <li className="flex items-start gap-3">
-                <span className="text-accent mt-1.5 text-xs">&#9670;</span>
-                We reserve the right to change subscription pricing with reasonable
-                notice. Existing subscribers will be notified of any price changes
-                before their next billing cycle
-              </li>
-            </ul>
           </div>
 
           {/* 7. Acceptable Use */}

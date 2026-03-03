@@ -156,7 +156,7 @@ export async function POST(request: NextRequest) {
       let result;
       if (rawResult.protocol) {
         result = normalizeOutput(rawResult, input.monthlyBudget);
-      } else {
+      } else if (rawResult.immediatePriorities) {
         // Fallback: Claude returned old format — merge phased arrays
         result = rawResult;
         const seen = new Set((result.immediatePriorities ?? []).map((i: { investmentId: string }) => i.investmentId));
@@ -173,6 +173,8 @@ export async function POST(request: NextRequest) {
         if ((result.totalMonthlyCost ?? 0) < minTarget) {
           result.totalMonthlyCost = Math.round(minTarget);
         }
+      } else {
+        throw new Error("Unrecognized analysis output format: missing both 'protocol' and 'immediatePriorities'");
       }
 
       // Log for debugging
@@ -188,7 +190,6 @@ export async function POST(request: NextRequest) {
         primary_goal: input.primaryGoal,
         age_range: input.ageRange,
         result,
-        is_premium: false,
         claude_model: "claude-haiku-4-5-20251001",
       });
       if (insertErr) console.error("Failed to save analysis:", insertErr.message);

@@ -172,9 +172,7 @@ for (const inv of investments) {
 export function resolveInvestment(id: string): Investment | undefined {
   const exact = investmentMap.get(id);
   if (exact) return exact;
-  const lower = investmentMap.get(id.toLowerCase());
-  if (lower) return lower;
-  return investments.find((inv) => inv.id.startsWith(id) || id.startsWith(inv.id));
+  return investmentMap.get(id.toLowerCase());
 }
 
 export function getInvestmentById(id: string): Investment | undefined {
