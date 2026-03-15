@@ -14,34 +14,64 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (password.length < 6) {
+    if (password.length < 8) {
       return NextResponse.json(
-        { error: "Password must be at least 6 characters" },
+        { error: "Password must be at least 8 characters" },
         { status: 400 }
       );
     }
 
-    // Create user in Supabase Auth
+    // Create user with admin API (no email sent yet)
     const { data: authData, error: authError } =
       await supabaseAdmin.auth.admin.createUser({
         email,
         password,
-        email_confirm: true, // Skip email verification for less friction
+        email_confirm: false,
         user_metadata: { first_name: firstName || "" },
       });
 
+    const supabaseUrl = process.env.SUPABASE_URL || "";
+    const supabaseAnonKey = process.env.SUPABASE_ANON_KEY || "";
+
     if (authError) {
+      // If user already exists but unconfirmed, resend confirmation
+      const errMsg = authError.message || "";
+      if (errMsg.includes("already") || errMsg.includes("duplicate") || errMsg.includes("exists")) {
+        await fetch(`${supabaseUrl}/auth/v1/resend`, {
+          method: "POST",
+          headers: {
+            "apikey": supabaseAnonKey,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ type: "signup", email }),
+        });
+        return NextResponse.json({
+          success: true,
+          needsConfirmation: true,
+          message: "Check your email to confirm your account.",
+        });
+      }
       return NextResponse.json(
-        { error: authError.message },
+        { error: "Unable to create account. Please try again." },
         { status: 400 }
       );
     }
 
-    // Create profile
+    // Create profile (use admin to bypass RLS)
     await supabaseAdmin.from("profiles").insert({
       id: authData.user.id,
       email,
       first_name: firstName || "",
+    });
+
+    // Trigger confirmation email
+    await fetch(`${supabaseUrl}/auth/v1/resend`, {
+      method: "POST",
+      headers: {
+        "apikey": supabaseAnonKey,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ type: "signup", email }),
     });
 
     // Subscribe to ConvertKit (non-blocking)
@@ -51,28 +81,10 @@ export async function POST(request: NextRequest) {
       tags: { source: "budget-optimizer" },
     }).catch(() => {});
 
-    // Sign in to get session tokens
-    const { data: session, error: signInError } =
-      await supabaseAdmin.auth.admin.generateLink({
-        type: "magiclink",
-        email,
-      });
-
-    if (signInError) {
-      // User created but sign-in failed — they can log in manually
-      return NextResponse.json({
-        success: true,
-        message: "Account created. Please log in.",
-      });
-    }
-
     return NextResponse.json({
       success: true,
-      user: {
-        id: authData.user.id,
-        email: authData.user.email,
-        firstName: firstName || "",
-      },
+      needsConfirmation: true,
+      message: "Check your email to confirm your account.",
     });
   } catch {
     return NextResponse.json(

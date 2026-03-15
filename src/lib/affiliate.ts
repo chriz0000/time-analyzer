@@ -10,7 +10,7 @@ export function buildAffiliateUrl(investment: Investment): string {
     investment.category === "equipment"
   ) {
     const query = encodeURIComponent(investment.name);
-    return `https://www.amazon.com/s?k=${query}`;
+    return `https://www.amazon.com/s?k=${query}&tag=newagelongevi-20`;
   }
 
   return "";

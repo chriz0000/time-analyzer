@@ -24,8 +24,11 @@ export async function POST(request: NextRequest) {
     });
 
     if (error) {
+      const msg = error.message?.toLowerCase().includes("email not confirmed")
+        ? "Please confirm your email before logging in. Check your inbox."
+        : "Invalid email or password";
       return NextResponse.json(
-        { error: "Invalid email or password" },
+        { error: msg },
         { status: 401 }
       );
     }

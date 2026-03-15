@@ -45,6 +45,7 @@ export interface Investment {
   goalAlignment: Record<BudgetGoal, number>; // 1-10
   affiliateUrl?: string;
   buyUrl?: string;
+  products?: { name: string; url: string; price: string; badge?: string }[];
 }
 
 // ──────────────────────────────────────
@@ -244,7 +245,7 @@ const tier1: Investment[] = [
   },
   {
     id: "creatine",
-    name: "Creatine Monohydrate (5g/day)",
+    name: "Creatine Monohydrate",
     category: "supplement",
     tier: "free",
     costPerMonth: 12,
@@ -260,10 +261,14 @@ const tier1: Investment[] = [
     outcomes: ["5-10% strength increase", "Improved cognitive performance", "Neuroprotective effects"],
     citation: "Kreider et al., 2017 (ISSN position stand); Avgerinos et al., 2018",
     goalAlignment: { lifespan: 7, performance: 10, disease_prevention: 6, aesthetics: 9 },
+    products: [
+      { name: "Nutricost Creatine Monohydrate", url: "https://www.amazon.com/dp/B00GL2HMES?tag=newagelongevi-20", price: "$23", badge: "Best Value" },
+      { name: "Thorne Creatine", url: "https://www.amazon.com/dp/B07978VPPH?tag=newagelongevi-20", price: "$32", badge: "Best Overall" },
+    ],
   },
   {
     id: "vitamin-d3-k2",
-    name: "Vitamin D3 + K2 (2000-5000 IU/day)",
+    name: "Vitamin D3 + K2",
     category: "supplement",
     tier: "free",
     costPerMonth: 12,
@@ -279,10 +284,14 @@ const tier1: Investment[] = [
     outcomes: ["12% lower all-cause mortality", "Improved bone density", "Better immune function"],
     citation: "Autier & Gandini, 2007 (meta-analysis); Schwalfenberg, 2017",
     goalAlignment: { lifespan: 9, performance: 5, disease_prevention: 9, aesthetics: 4 },
+    products: [
+      { name: "NatureWise Vitamin D3+K2", url: "https://www.amazon.com/dp/B09K4Q68H9?tag=newagelongevi-20", price: "$20", badge: "Best Value" },
+      { name: "Sports Research D3+K2", url: "https://www.amazon.com/dp/B00GB85JR4?tag=newagelongevi-20", price: "$18" },
+    ],
   },
   {
     id: "magnesium-glycinate",
-    name: "Magnesium Glycinate (400mg/day)",
+    name: "Magnesium Glycinate",
     category: "supplement",
     tier: "free",
     costPerMonth: 15,
@@ -298,10 +307,14 @@ const tier1: Investment[] = [
     outcomes: ["Better deep sleep", "Lower blood pressure", "Improved insulin sensitivity"],
     citation: "Abbasi et al., 2012; Zhang et al., 2016 (meta-analysis)",
     goalAlignment: { lifespan: 8, performance: 6, disease_prevention: 8, aesthetics: 4 },
+    products: [
+      { name: "Doctor's Best Magnesium Glycinate", url: "https://www.amazon.com/dp/B000BD0RT0?tag=newagelongevi-20", price: "$15", badge: "Best Value" },
+      { name: "NOW Magnesium Glycinate", url: "https://www.amazon.com/dp/B07NWMVMT1?tag=newagelongevi-20", price: "$18" },
+    ],
   },
   {
     id: "omega-3",
-    name: "Omega-3 Fish Oil (2g EPA+DHA/day)",
+    name: "Omega-3 Fish Oil",
     category: "supplement",
     tier: "free",
     costPerMonth: 25,
@@ -317,6 +330,10 @@ const tier1: Investment[] = [
     outcomes: ["35% lower cardiovascular mortality", "25% lower triglycerides", "Reduced inflammation (CRP)"],
     citation: "Hu et al., 2019 (meta-analysis, n=127,477); VITAL trial, 2019",
     goalAlignment: { lifespan: 9, performance: 6, disease_prevention: 10, aesthetics: 5 },
+    products: [
+      { name: "Nordic Naturals Ultimate Omega", url: "https://www.amazon.com/dp/B002CQU564?tag=newagelongevi-20", price: "$28", badge: "Best Overall" },
+      { name: "Sports Research Triple Strength Omega-3", url: "https://www.amazon.com/dp/B0BCH43LR5?tag=newagelongevi-20", price: "$25", badge: "Best Value" },
+    ],
   },
   {
     id: "electrolytes",
@@ -336,6 +353,10 @@ const tier1: Investment[] = [
     outcomes: ["Reduced muscle cramps", "Better hydration", "Improved exercise performance"],
     citation: "Baker et al., 2016 (ACSM); Shirreffs, 2003",
     goalAlignment: { lifespan: 5, performance: 8, disease_prevention: 4, aesthetics: 5 },
+    products: [
+      { name: "LMNT Electrolyte Mix", url: "https://www.amazon.com/dp/B0CQDFPMQW?tag=newagelongevi-20", price: "$45/30pk", badge: "Best Overall" },
+      { name: "Liquid IV Hydration", url: "https://www.amazon.com/dp/B01IT9NLHW?tag=newagelongevi-20", price: "$24/16pk" },
+    ],
   },
 ];
 
@@ -346,7 +367,7 @@ const tier1: Investment[] = [
 const tier2: Investment[] = [
   {
     id: "protein-optimization",
-    name: "Whey/Plant Protein (1.6g/kg body weight)",
+    name: "Whey/Plant Protein",
     category: "supplement",
     tier: "budget",
     costPerMonth: 40,
@@ -358,10 +379,14 @@ const tier2: Investment[] = [
     timeToBenefit: "1_month",
     synergies: ["bodyweight-training", "creatine", "gym-membership"],
     description:
-      "Optimal protein intake for muscle protein synthesis is 1.6g/kg/day. Most people under-eat protein. Supplement to hit your target — whey, casein, or pea protein.",
+      "Most people under-eat protein. Research shows higher protein intake supports muscle protein synthesis. Supplement to hit your target — whey, casein, or pea protein. Consult a healthcare provider for the right amount.",
     outcomes: ["Increased muscle protein synthesis", "Better body composition", "Faster recovery"],
     citation: "Morton et al., 2018 (meta-analysis, n=1,863); Phillips et al., 2016",
     goalAlignment: { lifespan: 7, performance: 9, disease_prevention: 6, aesthetics: 10 },
+    products: [
+      { name: "Dymatize ISO100 Whey Protein", url: "https://www.amazon.com/dp/B000GIPJ0M?tag=newagelongevi-20", price: "$33", badge: "Best Overall" },
+      { name: "Optimum Nutrition Gold Standard Whey", url: "https://www.amazon.com/dp/B000QSNYGI?tag=newagelongevi-20", price: "$30", badge: "Best Value" },
+    ],
   },
   {
     id: "sauna",
@@ -381,10 +406,14 @@ const tier2: Investment[] = [
     outcomes: ["50% lower cardiovascular mortality", "40% lower all-cause mortality", "Improved endothelial function"],
     citation: "Laukkanen et al., 2015 (n=2,315, 20-year follow-up); Hussain & Cohen, 2018",
     goalAlignment: { lifespan: 10, performance: 7, disease_prevention: 9, aesthetics: 6 },
+    products: [
+      { name: "SereneLife Portable Infrared Sauna", url: "https://www.amazon.com/dp/B079QXK2TQ?tag=newagelongevi-20", price: "$200", badge: "Best Value" },
+      { name: "ZONEMEL Full Size Portable Sauna", url: "https://www.amazon.com/dp/B0CPXMS4X1?tag=newagelongevi-20", price: "$300", badge: "Home Option" },
+    ],
   },
   {
     id: "berberine",
-    name: "Berberine (500mg 2x/day)",
+    name: "Berberine",
     category: "supplement",
     tier: "budget",
     costPerMonth: 25,
@@ -396,14 +425,18 @@ const tier2: Investment[] = [
     timeToBenefit: "1_month",
     synergies: ["time-restricted-eating", "zone-2-walking"],
     description:
-      "Activates AMPK (the longevity pathway) similarly to metformin. Reduces fasting blood glucose by 20%, lowers LDL cholesterol, and improves insulin sensitivity. Often called 'nature's metformin'.",
+      "Activates AMPK (the longevity pathway) similarly to metformin. Reduces fasting blood glucose by 20%, lowers LDL cholesterol, and improves insulin sensitivity. Often called 'nature's metformin'. May interact with blood sugar-lowering medications (metformin, sulfonylureas) and statins — consult your doctor before use.",
     outcomes: ["20% lower fasting glucose", "Reduced LDL cholesterol", "AMPK activation"],
     citation: "Yin et al., 2008 (n=116 RCT); Dong et al., 2012 (meta-analysis)",
     goalAlignment: { lifespan: 9, performance: 5, disease_prevention: 9, aesthetics: 7 },
+    products: [
+      { name: "Thorne Berberine", url: "https://www.amazon.com/dp/B009LI7VRC?tag=newagelongevi-20", price: "$32", badge: "Best Overall" },
+      { name: "Sunergetic Berberine", url: "https://www.amazon.com/dp/B01AMPTXLE?tag=newagelongevi-20", price: "$19", badge: "Best Value" },
+    ],
   },
   {
     id: "coq10",
-    name: "CoQ10 Ubiquinol (200mg/day)",
+    name: "CoQ10 Ubiquinol",
     category: "supplement",
     tier: "budget",
     costPerMonth: 30,
@@ -419,10 +452,14 @@ const tier2: Investment[] = [
     outcomes: ["Improved mitochondrial function", "Reduced oxidative stress", "Better heart health"],
     citation: "Mortensen et al., 2014 (Q-SYMBIO trial, n=420); Littarru & Tiano, 2007",
     goalAlignment: { lifespan: 7, performance: 6, disease_prevention: 7, aesthetics: 3 },
+    products: [
+      { name: "Qunol Ultra CoQ10", url: "https://www.amazon.com/dp/B0055OUOQQ?tag=newagelongevi-20", price: "$22", badge: "Best Value" },
+      { name: "Doctor's Best Ubiquinol", url: "https://www.amazon.com/dp/B002CBXR46?tag=newagelongevi-20", price: "$30", badge: "Best Overall" },
+    ],
   },
   {
     id: "nac",
-    name: "NAC (N-Acetyl Cysteine, 600mg/day)",
+    name: "NAC (N-Acetyl Cysteine)",
     category: "supplement",
     tier: "budget",
     costPerMonth: 15,
@@ -438,10 +475,14 @@ const tier2: Investment[] = [
     outcomes: ["Boosted glutathione levels", "Reduced oxidative markers", "Improved respiratory health"],
     citation: "Atkuri et al., 2007; De Flora et al., 1997",
     goalAlignment: { lifespan: 7, performance: 5, disease_prevention: 8, aesthetics: 4 },
+    products: [
+      { name: "NOW NAC 600mg", url: "https://www.amazon.com/dp/B0013OUQ3S?tag=newagelongevi-20", price: "$14", badge: "Best Value" },
+      { name: "Jarrow Formulas NAC Sustain", url: "https://www.amazon.com/dp/B0013OVVK0?tag=newagelongevi-20", price: "$18" },
+    ],
   },
   {
     id: "ashwagandha",
-    name: "Ashwagandha KSM-66 (600mg/day)",
+    name: "Ashwagandha KSM-66",
     category: "supplement",
     tier: "budget",
     costPerMonth: 20,
@@ -453,14 +494,17 @@ const tier2: Investment[] = [
     timeToBenefit: "1_month",
     synergies: ["meditation", "breathwork", "sleep-consistency"],
     description:
-      "Adaptogen that reduces cortisol by 30%, improves VO2 max, and increases testosterone in men. KSM-66 is the most clinically studied extract with consistent results.",
+      "Adaptogen that reduces cortisol by 30%, improves VO2 max, and increases testosterone in men. KSM-66 is the most clinically studied extract with consistent results. Not recommended during pregnancy or nursing — consult your healthcare provider.",
     outcomes: ["30% cortisol reduction", "Improved VO2 max", "Better sleep quality"],
     citation: "Chandrasekhar et al., 2012 (n=64 RCT); Wankhede et al., 2015",
     goalAlignment: { lifespan: 6, performance: 8, disease_prevention: 6, aesthetics: 7 },
+    products: [
+      { name: "Nootropics Depot KSM-66", url: "https://www.amazon.com/dp/B01CZ2EFC4?tag=newagelongevi-20", price: "$20", badge: "Best Overall" },
+    ],
   },
   {
     id: "curcumin",
-    name: "Curcumin + Piperine (500mg/day)",
+    name: "Curcumin + Piperine",
     category: "supplement",
     tier: "budget",
     costPerMonth: 25,
@@ -476,10 +520,14 @@ const tier2: Investment[] = [
     outcomes: ["Reduced CRP and IL-6", "Improved joint health", "Neuroprotective effects"],
     citation: "Sahebkar et al., 2014 (meta-analysis); Shoba et al., 1998",
     goalAlignment: { lifespan: 7, performance: 5, disease_prevention: 8, aesthetics: 3 },
+    products: [
+      { name: "Meriva Curcumin Phytosome", url: "https://www.amazon.com/dp/B0797FSF89?tag=newagelongevi-20", price: "$26", badge: "Best Overall" },
+      { name: "Doctor's Best Curcumin", url: "https://www.amazon.com/dp/B000BD0RQS?tag=newagelongevi-20", price: "$19", badge: "Best Value" },
+    ],
   },
   {
     id: "collagen",
-    name: "Collagen Peptides (15g/day)",
+    name: "Collagen Peptides",
     category: "supplement",
     tier: "budget",
     costPerMonth: 30,
@@ -495,10 +543,14 @@ const tier2: Investment[] = [
     outcomes: ["28% improved skin elasticity", "Reduced joint pain", "Better gut health"],
     citation: "Proksch et al., 2014 (n=69); Zdzieblik et al., 2017",
     goalAlignment: { lifespan: 4, performance: 5, disease_prevention: 4, aesthetics: 9 },
+    products: [
+      { name: "Sports Research Collagen Peptides", url: "https://www.amazon.com/dp/B00XQ2XGAA?tag=newagelongevi-20", price: "$25", badge: "Best Overall" },
+      { name: "Vital Proteins Collagen Peptides", url: "https://www.amazon.com/dp/B00K6JUG4K?tag=newagelongevi-20", price: "$25", badge: "Best Value" },
+    ],
   },
   {
     id: "probiotics",
-    name: "Multi-Strain Probiotic (50B+ CFU)",
+    name: "Multi-Strain Probiotic",
     category: "supplement",
     tier: "budget",
     costPerMonth: 35,
@@ -514,6 +566,10 @@ const tier2: Investment[] = [
     outcomes: ["Improved gut diversity", "Reduced GI inflammation", "Better immune response"],
     citation: "Hempel et al., 2012 (Cochrane review); Zhang et al., 2020",
     goalAlignment: { lifespan: 6, performance: 5, disease_prevention: 7, aesthetics: 5 },
+    products: [
+      { name: "Seed DS-01 Daily Synbiotic", url: "https://www.amazon.com/dp/B0CMJR4XGR?tag=newagelongevi-20", price: "$50/mo", badge: "Best Overall" },
+      { name: "Garden of Life Dr. Formulated Probiotics", url: "https://www.amazon.com/dp/B00Y8MP4G6?tag=newagelongevi-20", price: "$30", badge: "Best Value" },
+    ],
   },
   {
     id: "resistance-bands",
@@ -533,6 +589,10 @@ const tier2: Investment[] = [
     outcomes: ["Comparable strength gains to free weights", "Lower injury risk", "Portable training"],
     citation: "Lopes et al., 2019 (meta-analysis); Bergquist et al., 2018",
     goalAlignment: { lifespan: 7, performance: 8, disease_prevention: 6, aesthetics: 8 },
+    products: [
+      { name: "Fit Simplify Resistance Bands", url: "https://www.amazon.com/dp/B01AVDVHTI?tag=newagelongevi-20", price: "$12", badge: "Best Value" },
+      { name: "WODFitters Pull-Up Bands", url: "https://www.amazon.com/dp/B09XY3XM16?tag=newagelongevi-20", price: "$30", badge: "Best Overall" },
+    ],
   },
   {
     id: "foam-roller",
@@ -552,6 +612,10 @@ const tier2: Investment[] = [
     outcomes: ["10% improved range of motion", "Reduced DOMS", "Better recovery"],
     citation: "Cheatham et al., 2015 (meta-analysis); Beardsley & Skarabot, 2015",
     goalAlignment: { lifespan: 4, performance: 7, disease_prevention: 4, aesthetics: 5 },
+    products: [
+      { name: "TriggerPoint GRID Foam Roller", url: "https://www.amazon.com/dp/B0040EGNIU?tag=newagelongevi-20", price: "$35", badge: "Best Overall" },
+      { name: "Amazon Basics Foam Roller", url: "https://www.amazon.com/dp/B00XM2MRGI?tag=newagelongevi-20", price: "$14", badge: "Best Value" },
+    ],
   },
   {
     id: "blue-light-glasses",
@@ -571,6 +635,10 @@ const tier2: Investment[] = [
     outcomes: ["Improved melatonin production", "Better sleep quality", "Reduced eye strain"],
     citation: "Shechter et al., 2018 (Columbia, n=14 RCT); Burkhart & Phelps, 2009",
     goalAlignment: { lifespan: 5, performance: 5, disease_prevention: 4, aesthetics: 3 },
+    products: [
+      { name: "UVEX Skyper Blue Light Blocking", url: "https://www.amazon.com/dp/B000USRG90?tag=newagelongevi-20", price: "$10", badge: "Best Value" },
+      { name: "Swanwick Night Swannies", url: "https://www.amazon.com/dp/B010B5GUH0?tag=newagelongevi-20", price: "$70", badge: "Premium" },
+    ],
   },
   {
     id: "gym-membership",
@@ -590,6 +658,10 @@ const tier2: Investment[] = [
     outcomes: ["15% lower all-cause mortality", "Increased lean mass", "Improved metabolic health"],
     citation: "Momma et al., 2022 (meta-analysis); Ruiz et al., 2008 (n=8,762)",
     goalAlignment: { lifespan: 9, performance: 10, disease_prevention: 8, aesthetics: 10 },
+    products: [
+      { name: "Gymreapers Lifting Straps + Wrist Wraps", url: "https://www.amazon.com/dp/B07BB4463X?tag=newagelongevi-20", price: "$18", badge: "Essential Gear" },
+      { name: "Iron Bull Strength Powerlifting Belt", url: "https://www.amazon.com/dp/B07C46QS4S?tag=newagelongevi-20", price: "$40", badge: "Best Value" },
+    ],
   },
   {
     id: "hiit-program",
@@ -628,6 +700,10 @@ const tier2: Investment[] = [
     outcomes: ["250% dopamine increase", "Reduced body fat", "Improved insulin sensitivity"],
     citation: "Srámek et al., 2000; Søberg et al., 2021 (n=85)",
     goalAlignment: { lifespan: 7, performance: 9, disease_prevention: 7, aesthetics: 8 },
+    products: [
+      { name: "Ice Barrel Cold Plunge", url: "https://www.amazon.com/dp/B0DG3S2HTJ?tag=newagelongevi-20", price: "$1,200", badge: "Best Overall" },
+      { name: "Morozko Forge Ice Bath", url: "https://www.amazon.com/dp/B0BYDJKFDQ?tag=newagelongevi-20", price: "$3,400", badge: "Premium" },
+    ],
   },
   {
     id: "sleep-mask-earplugs",
@@ -647,6 +723,10 @@ const tier2: Investment[] = [
     outcomes: ["20-30% more deep sleep", "Improved melatonin production", "Lower nighttime heart rate"],
     citation: "Cho et al., 2013; Mason et al., 2022 (Northwestern)",
     goalAlignment: { lifespan: 7, performance: 6, disease_prevention: 6, aesthetics: 5 },
+    products: [
+      { name: "Manta Sleep Mask", url: "https://www.amazon.com/dp/B07PRG2CQY?tag=newagelongevi-20", price: "$35", badge: "Best Overall" },
+      { name: "Loop Quiet Earplugs", url: "https://www.amazon.com/dp/B0D3V61JC8?tag=newagelongevi-20", price: "$25", badge: "Best Value" },
+    ],
   },
   {
     id: "standing-desk-converter",
@@ -666,6 +746,10 @@ const tier2: Investment[] = [
     outcomes: ["Reduced sedentary time", "Lower back pain reduction", "Improved energy"],
     citation: "Biswas et al., 2015 (meta-analysis); Ekelund et al., 2016",
     goalAlignment: { lifespan: 5, performance: 4, disease_prevention: 5, aesthetics: 3 },
+    products: [
+      { name: "FlexiSpot Standing Desk Converter", url: "https://www.amazon.com/dp/B0DM1Y5J3R?tag=newagelongevi-20", price: "$180", badge: "Best Overall" },
+      { name: "VIVO Standing Desk Converter", url: "https://www.amazon.com/dp/B075JYG2TB?tag=newagelongevi-20", price: "$120", badge: "Best Value" },
+    ],
   },
   {
     id: "meditation-app",
@@ -685,6 +769,10 @@ const tier2: Investment[] = [
     outcomes: ["Higher meditation adherence", "Structured progression", "Expert-guided techniques"],
     citation: "Lyzwinski et al., 2019 (systematic review); Flett et al., 2019",
     goalAlignment: { lifespan: 6, performance: 6, disease_prevention: 6, aesthetics: 2 },
+    products: [
+      { name: "Waking Up App (Sam Harris)", url: "https://www.wakingup.com", price: "$15/mo", badge: "Best Overall" },
+      { name: "Headspace Annual Plan", url: "https://www.headspace.com", price: "$13/mo", badge: "Best for Beginners" },
+    ],
   },
   {
     id: "cgm-trial",
@@ -704,6 +792,10 @@ const tier2: Investment[] = [
     outcomes: ["Personalized food response data", "Optimized meal timing", "Reduced glucose spikes"],
     citation: "Hall et al., 2018; Zeevi et al., 2015 (Cell, n=800)",
     goalAlignment: { lifespan: 7, performance: 6, disease_prevention: 8, aesthetics: 7 },
+    products: [
+      { name: "Stelo by Dexcom (OTC CGM)", url: "https://www.amazon.com/dp/B0DTZ616WZ?tag=newagelongevi-20", price: "$99/mo", badge: "No Prescription" },
+      { name: "Nutrisense CGM Program", url: "https://www.nutrisense.io", price: "$150/mo", badge: "Best Overall" },
+    ],
   },
   {
     id: "garmin-watch",
@@ -723,6 +815,10 @@ const tier2: Investment[] = [
     outcomes: ["Precise heart rate zone training", "Daily HRV and training readiness score", "GPS-tracked running metrics (pace, cadence, ground contact)"],
     citation: "Gilgen-Ammann et al., 2019 (Sensors); Plews et al., 2017",
     goalAlignment: { lifespan: 6, performance: 9, disease_prevention: 5, aesthetics: 5 },
+    products: [
+      { name: "Garmin Forerunner 265", url: "https://www.amazon.com/dp/B0BS1T9J4Y?tag=newagelongevi-20", price: "$400", badge: "Best Overall" },
+      { name: "Garmin Forerunner 165", url: "https://www.amazon.com/dp/B0CT3SGHXL?tag=newagelongevi-20", price: "$250", badge: "Best Value" },
+    ],
   },
   {
     id: "smart-scale",
@@ -742,6 +838,10 @@ const tier2: Investment[] = [
     outcomes: ["25% better weight management adherence", "Tracked body composition trends over time", "Early detection of muscle loss or fat gain"],
     citation: "Zheng et al., 2015 (meta-analysis, n=3,289 on self-weighing); Shieh et al., 2016",
     goalAlignment: { lifespan: 5, performance: 6, disease_prevention: 5, aesthetics: 7 },
+    products: [
+      { name: "Withings Body+", url: "https://www.amazon.com/dp/B071XW4C5Q?tag=newagelongevi-20", price: "$80", badge: "Best Overall" },
+      { name: "Renpho Smart Scale", url: "https://www.amazon.com/dp/B01N1UX8RW?tag=newagelongevi-20", price: "$20", badge: "Best Value" },
+    ],
   },
   {
     id: "massage-gun",
@@ -761,6 +861,11 @@ const tier2: Investment[] = [
     outcomes: ["30% reduction in DOMS", "Increased range of motion within 5 minutes", "Faster inter-session recovery"],
     citation: "Konrad et al., 2020 (Journal of Clinical Medicine, RCT); Martin et al., 2021",
     goalAlignment: { lifespan: 3, performance: 8, disease_prevention: 3, aesthetics: 5 },
+    products: [
+      { name: "Theragun Elite", url: "https://www.amazon.com/dp/B0C42NTLYC?tag=newagelongevi-20", price: "$300", badge: "Best Overall" },
+      { name: "BOB AND BRAD C2 Mini", url: "https://www.amazon.com/dp/B08CKWVYMF?tag=newagelongevi-20", price: "$36", badge: "Best Value" },
+      { name: "Hypervolt 2 Pro", url: "https://www.amazon.com/dp/B09JB64T9Z?tag=newagelongevi-20", price: "$230" },
+    ],
   },
   {
     id: "greens-powder",
@@ -780,6 +885,10 @@ const tier2: Investment[] = [
     outcomes: ["Improved micronutrient coverage", "Increased daily fruit/vegetable equivalent intake", "Better self-reported energy and digestion"],
     citation: "Zhang et al., 2020 (fruit/vegetable powder supplementation); Lamprecht et al., 2007",
     goalAlignment: { lifespan: 5, performance: 5, disease_prevention: 6, aesthetics: 4 },
+    products: [
+      { name: "AG1 Athletic Greens", url: "https://www.amazon.com/dp/B0CHF1B7HQ?tag=newagelongevi-20", price: "$79/mo", badge: "Most Popular" },
+      { name: "Amazing Grass Green Superfood", url: "https://www.amazon.com/dp/B00112ILZM?tag=newagelongevi-20", price: "$22", badge: "Best Value" },
+    ],
   },
   {
     id: "pre-workout",
@@ -795,10 +904,15 @@ const tier2: Investment[] = [
     timeToBenefit: "1_week",
     synergies: ["gym-membership", "creatine", "hiit-program"],
     description:
-      "Evidence-based pre-workout combining caffeine (200mg), citrulline malate (8g), beta-alanine (3.2g), and betaine (2.5g) at clinically effective doses. A 2018 meta-analysis found multi-ingredient pre-workouts significantly improved muscular endurance, power output, and training volume when ingredients are dosed at research-backed levels.",
+      "Evidence-based pre-workout combining caffeine, citrulline malate, beta-alanine, and betaine at clinically studied levels. A 2018 meta-analysis found multi-ingredient pre-workouts significantly improved muscular endurance, power output, and training volume. Follow the product label for serving guidance.",
     outcomes: ["12-16% improvement in muscular endurance", "Increased power output and training volume", "Enhanced focus and time to exhaustion"],
     citation: "Harty et al., 2018 (JISSN meta-analysis); Trexler et al., 2015 (beta-alanine meta-analysis)",
     goalAlignment: { lifespan: 3, performance: 9, disease_prevention: 2, aesthetics: 8 },
+    products: [
+      { name: "Gorilla Mode Pre-Workout", url: "https://www.amazon.com/dp/B0948F352F?tag=newagelongevi-20", price: "$49", badge: "Best Overall" },
+      { name: "Legion Pulse Pre-Workout", url: "https://www.amazon.com/dp/B00QYZ6MLG?tag=newagelongevi-20", price: "$40", badge: "Best Value" },
+      { name: "Transparent Labs BULK", url: "https://www.amazon.com/dp/B0CJGSQ121?tag=newagelongevi-20", price: "$50", badge: "Clean Formula" },
+    ],
   },
   {
     id: "eaa-supplement",
@@ -818,6 +932,10 @@ const tier2: Investment[] = [
     outcomes: ["50% greater MPS stimulation than BCAAs alone", "Reduced muscle breakdown during fasted training", "Improved recovery between sessions"],
     citation: "Jackman et al., 2017 (Frontiers in Physiology, RCT); Wolfe, 2017 (JISSN review)",
     goalAlignment: { lifespan: 4, performance: 8, disease_prevention: 3, aesthetics: 8 },
+    products: [
+      { name: "Kion Aminos", url: "https://www.amazon.com/dp/B078RW4K1B?tag=newagelongevi-20", price: "$40", badge: "Best Overall" },
+      { name: "Nutricost EAA Powder", url: "https://www.amazon.com/dp/B09SP6HLLP?tag=newagelongevi-20", price: "$25", badge: "Best Value" },
+    ],
   },
   {
     id: "sleep-supplement-stack",
@@ -833,10 +951,14 @@ const tier2: Investment[] = [
     timeToBenefit: "1_week",
     synergies: ["sleep-consistency", "magnesium-glycinate", "morning-sunlight"],
     description:
-      "A synergistic sleep stack combining magnesium L-threonate (which crosses the blood-brain barrier to enhance synaptic plasticity), glycine (3g, which lowers core body temperature to initiate sleep), and apigenin (50mg, a mild anxiolytic flavonoid found in chamomile). Each compound targets a different mechanism of sleep onset and maintenance.",
+      "A synergistic sleep stack combining magnesium L-threonate (which crosses the blood-brain barrier to enhance synaptic plasticity), glycine (which lowers core body temperature to initiate sleep), and apigenin (a mild anxiolytic flavonoid found in chamomile). Each compound targets a different mechanism of sleep onset and maintenance. Follow product labels for serving sizes.",
     outcomes: ["30-45 min faster sleep onset", "Improved subjective sleep quality scores", "Enhanced slow-wave deep sleep duration"],
     citation: "Bannai et al., 2012 (glycine RCT, n=11); Slutsky et al., 2010 (Mg-threonate); Salehi et al., 2019 (apigenin review)",
     goalAlignment: { lifespan: 8, performance: 7, disease_prevention: 7, aesthetics: 5 },
+    products: [
+      { name: "Nootropics Depot Sleep Support", url: "https://www.amazon.com/dp/B07V3GP1YP?tag=newagelongevi-20", price: "$25", badge: "Best Overall" },
+      { name: "Magtein Magnesium L-Threonate", url: "https://www.amazon.com/dp/B01M4GM9R1?tag=newagelongevi-20", price: "$35", badge: "Best Value" },
+    ],
   },
   {
     id: "air-purifier",
@@ -856,6 +978,10 @@ const tier2: Investment[] = [
     outcomes: ["Reduced PM2.5 exposure by 40-60%", "Lower systemic inflammation (CRP, IL-6)", "Improved sleep quality and respiratory health"],
     citation: "Morishita et al., 2018 (meta-analysis of HEPA filter RCTs); Chen et al., 2015 (JAMA Internal Medicine)",
     goalAlignment: { lifespan: 7, performance: 5, disease_prevention: 8, aesthetics: 3 },
+    products: [
+      { name: "Coway Airmega AP-1512HH", url: "https://www.amazon.com/dp/B01728NLRG?tag=newagelongevi-20", price: "$150", badge: "Best Overall" },
+      { name: "Levoit Core 300S", url: "https://www.amazon.com/dp/B08R794ZMX?tag=newagelongevi-20", price: "$100", badge: "Best Value" },
+    ],
   },
   {
     id: "water-filter",
@@ -875,6 +1001,10 @@ const tier2: Investment[] = [
     outcomes: ["95-99% removal of heavy metals and PFAS", "Reduced endocrine disruptor exposure", "Cleaner baseline water for all consumption"],
     citation: "Grandjean & Clapp, 2015 (PFAS review); Levallois et al., 2018 (water contaminants and health)",
     goalAlignment: { lifespan: 5, performance: 3, disease_prevention: 7, aesthetics: 2 },
+    products: [
+      { name: "APEC Water Systems RO-90", url: "https://www.amazon.com/dp/B00I0ZGOZM?tag=newagelongevi-20", price: "$200", badge: "Best Overall" },
+      { name: "iSpring RCC7AK", url: "https://www.amazon.com/dp/B003XELTTG?tag=newagelongevi-20", price: "$175", badge: "Best Value" },
+    ],
   },
   {
     id: "sauna-blanket",
@@ -894,6 +1024,9 @@ const tier2: Investment[] = [
     outcomes: ["Increased heat shock protein expression", "Improved endothelial function", "Enhanced recovery and relaxation"],
     citation: "Beever, 2009 (infrared sauna RCT); Hussain & Cohen, 2018 (sauna review)",
     goalAlignment: { lifespan: 6, performance: 5, disease_prevention: 6, aesthetics: 5 },
+    products: [
+      { name: "HigherDOSE Infrared Sauna Blanket", url: "https://www.amazon.com/dp/B09M8YQ4KB?tag=newagelongevi-20", price: "$400", badge: "Best Overall" },
+    ],
   },
   {
     id: "protein-bars",
@@ -913,6 +1046,11 @@ const tier2: Investment[] = [
     outcomes: ["20g+ additional protein per serving", "Better daily protein distribution", "Improved adherence to protein targets"],
     citation: "Mamerow et al., 2014 (Journal of Nutrition, protein distribution); Morton et al., 2018",
     goalAlignment: { lifespan: 4, performance: 7, disease_prevention: 3, aesthetics: 8 },
+    products: [
+      { name: "Barebells Protein Bars 12pk", url: "https://www.amazon.com/dp/B09PYB4MQS?tag=newagelongevi-20", price: "$30", badge: "Best Overall" },
+      { name: "RXBAR Protein Bars 12pk", url: "https://www.amazon.com/dp/B0143NQVP2?tag=newagelongevi-20", price: "$24", badge: "Best Value" },
+      { name: "Built Bar Variety 12pk", url: "https://www.amazon.com/dp/B0C2KZ2VQW?tag=newagelongevi-20", price: "$28" },
+    ],
   },
   {
     id: "compression-boots",
@@ -932,6 +1070,10 @@ const tier2: Investment[] = [
     outcomes: ["Reduced post-exercise muscle soreness by 22%", "Faster lactate clearance", "Improved next-day performance markers"],
     citation: "Draper et al., 2020 (JSCR, RCT); Martin et al., 2015 (International Journal of Sports Physiology)",
     goalAlignment: { lifespan: 3, performance: 8, disease_prevention: 3, aesthetics: 5 },
+    products: [
+      { name: "Normatec 3 Legs", url: "https://www.amazon.com/dp/B0B72QBWHC?tag=newagelongevi-20", price: "$600", badge: "Best Overall" },
+      { name: "BOB AND BRAD Leg Massager", url: "https://www.amazon.com/dp/B09TZSWBGS?tag=newagelongevi-20", price: "$150", badge: "Best Value" },
+    ],
   },
 ];
 
@@ -958,10 +1100,14 @@ const tier3: Investment[] = [
     outcomes: ["Early disease detection", "Optimized supplement dosing", "Tracked health trajectory"],
     citation: "Diamandis, 2015; Attia, 2023 (Outlive framework)",
     goalAlignment: { lifespan: 8, performance: 7, disease_prevention: 10, aesthetics: 5 },
+    products: [
+      { name: "InsideTracker Ultimate Plan", url: "https://www.insidetracker.com", price: "$589/test", badge: "Best Overall" },
+      { name: "Marek Health Blood Panel", url: "https://www.marekhealth.com", price: "$250/test", badge: "Best Value" },
+    ],
   },
   {
     id: "nmn",
-    name: "NMN (Nicotinamide Mononucleotide, 1g/day)",
+    name: "NMN (Nicotinamide Mononucleotide)",
     category: "supplement",
     tier: "mid",
     costPerMonth: 80,
@@ -977,10 +1123,15 @@ const tier3: Investment[] = [
     outcomes: ["Improved NAD+ levels", "Better insulin sensitivity", "Increased aerobic capacity"],
     citation: "Yoshino et al., 2021 (n=25 RCT); Kim et al., 2022 (n=80 RCT)",
     goalAlignment: { lifespan: 8, performance: 6, disease_prevention: 7, aesthetics: 4 },
+    products: [
+      { name: "ProHealth Longevity NMN Pro", url: "https://www.amazon.com/dp/B095KYPCTD?tag=newagelongevi-20", price: "$50", badge: "Best Overall" },
+      { name: "Renue By Science NMN", url: "https://www.amazon.com/dp/B0CX8XKZH3?tag=newagelongevi-20", price: "$38", badge: "Best Value" },
+      { name: "Wonderfeel Youngr NMN", url: "https://www.getwonderfeel.com", price: "$88", badge: "Premium" },
+    ],
   },
   {
     id: "tongkat-ali",
-    name: "Tongkat Ali (400mg standardized extract)",
+    name: "Tongkat Ali",
     category: "supplement",
     tier: "mid",
     costPerMonth: 30,
@@ -996,6 +1147,10 @@ const tier3: Investment[] = [
     outcomes: ["15-20% higher free testosterone", "Reduced cortisol", "Improved body composition"],
     citation: "Henkel et al., 2014 (n=76 RCT); Talbott et al., 2013 (n=63)",
     goalAlignment: { lifespan: 5, performance: 8, disease_prevention: 4, aesthetics: 8 },
+    products: [
+      { name: "Nootropics Depot Tongkat Ali 10%", url: "https://www.amazon.com/dp/B088GW792L?tag=newagelongevi-20", price: "$30", badge: "Best Overall" },
+      { name: "Double Wood Tongkat Ali", url: "https://www.amazon.com/dp/B07TTDFXFV?tag=newagelongevi-20", price: "$20", badge: "Best Value" },
+    ],
   },
   {
     id: "personal-trainer",
@@ -1034,6 +1189,11 @@ const tier3: Investment[] = [
     outcomes: ["Improved mitochondrial function", "Faster recovery", "Better skin quality"],
     citation: "Hamblin, 2017 (Harvard review); Wunsch & Matuschka, 2014 (n=136 RCT)",
     goalAlignment: { lifespan: 5, performance: 6, disease_prevention: 5, aesthetics: 8 },
+    products: [
+      { name: "Joovv Go 2.0", url: "https://www.amazon.com/dp/B0BVLDX1Q9?tag=newagelongevi-20", price: "$450", badge: "Best Overall" },
+      { name: "Mito Red Light MitoPRO", url: "https://www.amazon.com/dp/B0CL5KJB7M?tag=newagelongevi-20", price: "$300", badge: "Best Value" },
+      { name: "PlatinumLED BioMax", url: "https://www.platinumtherapylights.com", price: "$370" },
+    ],
   },
   {
     id: "whoop-band",
@@ -1053,6 +1213,9 @@ const tier3: Investment[] = [
     outcomes: ["Continuous HRV tracking", "Optimized training load", "Improved sleep awareness"],
     citation: "Berryhill et al., 2020; Plews et al., 2017",
     goalAlignment: { lifespan: 6, performance: 9, disease_prevention: 5, aesthetics: 5 },
+    products: [
+      { name: "WHOOP 4.0 Band", url: "https://www.amazon.com/dp/B0BWSF6H4Q?tag=newagelongevi-20", price: "$239", badge: "Best Overall" },
+    ],
   },
   {
     id: "oura-ring",
@@ -1072,6 +1235,9 @@ const tier3: Investment[] = [
     outcomes: ["Accurate sleep staging data", "Early illness detection", "Readiness scoring"],
     citation: "de Zambotti et al., 2019; Maijala et al., 2021",
     goalAlignment: { lifespan: 6, performance: 7, disease_prevention: 6, aesthetics: 3 },
+    products: [
+      { name: "Oura Ring Gen 3", url: "https://www.amazon.com/dp/B0CSRK1MPZ?tag=newagelongevi-20", price: "$299", badge: "Best Overall" },
+    ],
   },
   {
     id: "omega-3-index-test",
@@ -1091,6 +1257,9 @@ const tier3: Investment[] = [
     outcomes: ["Validated omega-3 status", "Dose optimization", "Cardiovascular risk assessment"],
     citation: "Harris & Von Schacky, 2004; Kleber et al., 2016 (n=3,259)",
     goalAlignment: { lifespan: 8, performance: 4, disease_prevention: 9, aesthetics: 2 },
+    products: [
+      { name: "OmegaQuant Omega-3 Index Test", url: "https://www.amazon.com/dp/B07B5HX8Z4?tag=newagelongevi-20", price: "$55", badge: "Gold Standard" },
+    ],
   },
   {
     id: "apoe-genetic-test",
@@ -1110,6 +1279,10 @@ const tier3: Investment[] = [
     outcomes: ["Alzheimer's risk stratification", "Personalized supplement strategy", "Methylation optimization"],
     citation: "Corder et al., 1993; Klimentidis et al., 2022",
     goalAlignment: { lifespan: 7, performance: 3, disease_prevention: 9, aesthetics: 2 },
+    products: [
+      { name: "23andMe Health + Ancestry", url: "https://www.amazon.com/dp/B01G7PYQTM?tag=newagelongevi-20", price: "$229", badge: "Most Popular" },
+      { name: "Nebula Genomics Whole Genome", url: "https://nebula.org", price: "$249", badge: "Most Comprehensive" },
+    ],
   },
   {
     id: "rapamycin-consult",
@@ -1148,6 +1321,10 @@ const tier3: Investment[] = [
     outcomes: ["FDA-cleared ECG and AFib detection", "Continuous SpO2 and wrist temperature tracking", "Actionable fitness and recovery metrics"],
     citation: "Perez et al., 2019 (Apple Heart Study, n=419,297, NEJM); Seshadri et al., 2020",
     goalAlignment: { lifespan: 6, performance: 7, disease_prevention: 7, aesthetics: 4 },
+    products: [
+      { name: "Apple Watch Ultra 2", url: "https://www.amazon.com/dp/B0CHX4JGWL?tag=newagelongevi-20", price: "$799", badge: "Best Overall" },
+      { name: "Apple Watch Series 10", url: "https://www.amazon.com/dp/B0DGHQ2QH6?tag=newagelongevi-20", price: "$399", badge: "Best Value" },
+    ],
   },
   {
     id: "running-shoes-rotation",
@@ -1167,6 +1344,10 @@ const tier3: Investment[] = [
     outcomes: ["39% reduction in running-related injuries", "Extended shoe lifespan per pair", "Varied mechanical stimulus for lower extremity adaptation"],
     citation: "Malisoux et al., 2015 (Scandinavian Journal of Medicine & Science in Sports, n=264 RCT); Theisen et al., 2014",
     goalAlignment: { lifespan: 5, performance: 8, disease_prevention: 5, aesthetics: 4 },
+    products: [
+      { name: "Nike Pegasus 41", url: "https://www.amazon.com/dp/B0D2DQ8S6X?tag=newagelongevi-20", price: "$130", badge: "Best Overall" },
+      { name: "ASICS Gel-Nimbus 26", url: "https://www.amazon.com/dp/B0CN8FK2QV?tag=newagelongevi-20", price: "$160", badge: "Premium" },
+    ],
   },
   {
     id: "online-coaching",
@@ -1186,6 +1367,10 @@ const tier3: Investment[] = [
     outcomes: ["Periodized programming for progressive overload", "Adaptive nutrition targets based on real data", "2x greater hypertrophy vs. non-periodized training"],
     citation: "Harries et al., 2015 (JSCR, periodization meta-analysis); Williams et al., 2017",
     goalAlignment: { lifespan: 5, performance: 9, disease_prevention: 4, aesthetics: 9 },
+    products: [
+      { name: "RP Hypertrophy App", url: "https://rpstrength.com", price: "$30/mo", badge: "Best Overall" },
+      { name: "MacroFactor App", url: "https://macrofactor.com", price: "$12/mo", badge: "Best Nutrition" },
+    ],
   },
   {
     id: "blue-light-therapy",
@@ -1205,6 +1390,10 @@ const tier3: Investment[] = [
     outcomes: ["Significant reduction in depressive symptoms (d=0.54)", "Advanced circadian phase by 1-2 hours", "Improved energy, alertness, and sleep timing"],
     citation: "Tao et al., 2020 (meta-analysis of 35 RCTs); Pail et al., 2011 (Neuropsychobiology)",
     goalAlignment: { lifespan: 6, performance: 7, disease_prevention: 7, aesthetics: 3 },
+    products: [
+      { name: "Verilux HappyLight", url: "https://www.amazon.com/dp/B079YBGPM5?tag=newagelongevi-20", price: "$30", badge: "Best Value" },
+      { name: "Carex Day-Light Classic Plus", url: "https://www.amazon.com/dp/B00PCN4UVU?tag=newagelongevi-20", price: "$110", badge: "Best Overall" },
+    ],
   },
   {
     id: "home-gym-rack",
@@ -1224,6 +1413,10 @@ const tier3: Investment[] = [
     outcomes: ["15% reduced all-cause mortality from resistance training", "Zero commute time — higher training adherence", "Progressive overload capability for lifetime strength gains"],
     citation: "Momma et al., 2022 (British Journal of Sports Medicine, meta-analysis, n=370,256); Westcott, 2012",
     goalAlignment: { lifespan: 9, performance: 10, disease_prevention: 8, aesthetics: 10 },
+    products: [
+      { name: "Rep Fitness PR-1100", url: "https://www.amazon.com/dp/B07KY515S9?tag=newagelongevi-20", price: "$280", badge: "Best Value" },
+      { name: "Titan Fitness T-2", url: "https://www.amazon.com/dp/B0F5YY2C6M?tag=newagelongevi-20", price: "$350", badge: "Best Overall" },
+    ],
   },
   {
     id: "meal-tracking-app",
@@ -1243,6 +1436,10 @@ const tier3: Investment[] = [
     outcomes: ["3.5 kg greater weight loss vs. non-trackers", "Precise macro and calorie awareness", "Adaptive caloric targets based on real-world data"],
     citation: "Lyzwinski et al., 2018 (JMIR, systematic review); Turner-McGrievy et al., 2013 (RCT)",
     goalAlignment: { lifespan: 5, performance: 7, disease_prevention: 5, aesthetics: 9 },
+    products: [
+      { name: "MacroFactor App", url: "https://macrofactor.com", price: "$12/mo", badge: "Best Overall" },
+      { name: "MyFitnessPal Premium", url: "https://www.myfitnesspal.com/premium", price: "$20/mo", badge: "Largest Database" },
+    ],
   },
   {
     id: "vitamin-b-complex",
@@ -1262,6 +1459,10 @@ const tier3: Investment[] = [
     outcomes: ["25% reduction in homocysteine levels", "Improved methylation and energy metabolism", "Better cognitive function in those with B12 deficiency"],
     citation: "Clarke et al., 2014 (meta-analysis, homocysteine and B vitamins); Kennedy, 2016 (Nutrients, B-vitamin review)",
     goalAlignment: { lifespan: 6, performance: 5, disease_prevention: 7, aesthetics: 4 },
+    products: [
+      { name: "Thorne Basic B Complex", url: "https://www.amazon.com/dp/B00HST919C?tag=newagelongevi-20", price: "$18", badge: "Best Overall" },
+      { name: "Jarrow B-Right", url: "https://www.amazon.com/dp/B0016003Z0?tag=newagelongevi-20", price: "$15", badge: "Best Value" },
+    ],
   },
   {
     id: "zinc-supplement",
@@ -1281,6 +1482,10 @@ const tier3: Investment[] = [
     outcomes: ["33% shorter duration of colds", "Improved testosterone in zinc-deficient men", "Enhanced immune cell function (NK cells, T-cells)"],
     citation: "Hunter et al., 2021 (meta-analysis, zinc and immunity); Prasad, 2008 (Molecular Medicine)",
     goalAlignment: { lifespan: 5, performance: 6, disease_prevention: 7, aesthetics: 4 },
+    products: [
+      { name: "NOW OptiZinc", url: "https://www.amazon.com/dp/B00772DYV6?tag=newagelongevi-20", price: "$8", badge: "Best Value" },
+      { name: "Garden of Life Zinc", url: "https://www.amazon.com/dp/B0098U0QC0?tag=newagelongevi-20", price: "$12" },
+    ],
   },
   {
     id: "cold-plunge-membership",
@@ -1417,7 +1622,7 @@ const tier4: Investment[] = [
     timeToBenefit: "1_month",
     synergies: ["nmn", "longevity-physician", "quarterly-blood-work"],
     description:
-      "Intravenous NAD+ bypasses the oral bioavailability bottleneck, delivering 250-500mg directly into the bloodstream over 2-4 hours. Studies show IV NAD+ restores intracellular NAD+ levels within hours, improving mitochondrial respiration and activating sirtuins — the family of longevity-regulating enzymes that decline with age.",
+      "Intravenous NAD+ bypasses the oral bioavailability bottleneck, delivering the compound directly into the bloodstream. Studies show IV NAD+ restores intracellular NAD+ levels within hours, improving mitochondrial respiration and activating sirtuins — the family of longevity-regulating enzymes that decline with age. Must be administered by a licensed provider.",
     outcomes: ["Rapid NAD+ level restoration", "Improved mitochondrial respiration and energy", "Enhanced sirtuin activation for DNA repair"],
     citation: "Braidy et al., 2019; Rajman et al., 2018 (Cell Metabolism review)",
     goalAlignment: { lifespan: 9, performance: 8, disease_prevention: 7, aesthetics: 5 },
@@ -1459,6 +1664,10 @@ const tier4: Investment[] = [
     outcomes: ["20% reduction in cancer mortality via early detection", "15% fewer cardiovascular events", "Comprehensive baseline for longitudinal health tracking"],
     citation: "Si et al., 2014 (meta-analysis); Krogsboll et al., 2019 (Cochrane review)",
     goalAlignment: { lifespan: 9, performance: 4, disease_prevention: 10, aesthetics: 3 },
+    products: [
+      { name: "Prenuvo Full Body MRI + Screening", url: "https://www.prenuvo.com", price: "$2,499", badge: "Best Overall" },
+      { name: "Fountain Life Health Screening", url: "https://www.fountainlife.com", price: "$3,500", badge: "Most Comprehensive" },
+    ],
   },
   {
     id: "hormone-optimization",
@@ -1497,6 +1706,10 @@ const tier4: Investment[] = [
     outcomes: ["Up to 20% more deep sleep", "34% reduction in sleep onset latency", "Improved morning HRV and recovery scores"],
     citation: "Harding et al., 2019 (Current Biology, thermoregulation and sleep); Raymann et al., 2008",
     goalAlignment: { lifespan: 8, performance: 8, disease_prevention: 7, aesthetics: 5 },
+    products: [
+      { name: "Eight Sleep Pod 4 Ultra", url: "https://www.eightsleep.com", price: "$2,200", badge: "Best Overall" },
+      { name: "ChiliSleep Dock Pro", url: "https://www.amazon.com/dp/B0B3R8B9N7?tag=newagelongevi-20", price: "$700", badge: "Best Value" },
+    ],
   },
   {
     id: "functional-medicine-testing",
@@ -1516,6 +1729,10 @@ const tier4: Investment[] = [
     outcomes: ["Identification of hidden hormonal imbalances", "Quantified gut pathogen and dysbiosis data", "Targeted nutrient repletion based on organic acid markers"],
     citation: "Kresser, 2017 (Unconventional Medicine); Genova Diagnostics validation studies, 2020",
     goalAlignment: { lifespan: 7, performance: 6, disease_prevention: 9, aesthetics: 5 },
+    products: [
+      { name: "DUTCH Complete Hormone Test", url: "https://dutchtest.com/dutch-complete", price: "$399", badge: "Best Hormone Panel" },
+      { name: "Diagnostic Solutions GI-MAP", url: "https://www.diagnosticsolutionslab.com/tests/gi-map", price: "$380", badge: "Best Gut Test" },
+    ],
   },
   {
     id: "mental-performance-coach",
@@ -1592,6 +1809,11 @@ const tier4: Investment[] = [
     outcomes: ["250% sustained dopamine elevation for 2-3 hours", "Increased brown fat activation and resting metabolic rate", "15-20% improvement in post-exercise recovery markers"],
     citation: "Soberg et al., 2021 (n=85 RCT); Srámek et al., 2000; Tipton et al., 2017",
     goalAlignment: { lifespan: 7, performance: 9, disease_prevention: 8, aesthetics: 7 },
+    products: [
+      { name: "The Plunge All-In", url: "https://www.plunge.com", price: "$4,990", badge: "Best Overall" },
+      { name: "Morozko Forge Ice Bath", url: "https://www.amazon.com/dp/B0BYDJKFDQ?tag=newagelongevi-20", price: "$3,400" },
+      { name: "Ice Barrel 400", url: "https://www.amazon.com/dp/B0DG3S2HTJ?tag=newagelongevi-20", price: "$1,200", badge: "Best Value" },
+    ],
   },
 ];
 

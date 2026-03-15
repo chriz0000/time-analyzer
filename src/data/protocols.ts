@@ -178,7 +178,7 @@ export const protocols: Protocol[] = [
   },
   {
     id: "creatine",
-    name: "Creatine Monohydrate (5g/day)",
+    name: "Creatine Monohydrate",
     category: "Supplementation",
     timeRequired: 1,
     equipment: "None",
@@ -187,7 +187,7 @@ export const protocols: Protocol[] = [
     evidenceStrength: 9,
     outcomes: ["Muscle & brain benefits", "Improved mitochondrial function", "Neuroprotection"],
     description:
-      "5g daily of creatine monohydrate. One of the most researched supplements — benefits muscle, brain, and mitochondrial function.",
+      "One of the most researched supplements — benefits muscle, brain, and mitochondrial function. Follow product label for serving size.",
     citation: "Multiple meta-analyses; Rawson & Venezia, 2011",
     goalAlignment: { lifespan: 7, energy: 8, sleep: 4, body_composition: 8, mental_clarity: 7 },
     timeOfDay: "flexible",
@@ -203,14 +203,14 @@ export const protocols: Protocol[] = [
     evidenceStrength: 9,
     outcomes: ["25% lower mortality (if deficient)", "Bone health", "Immune function"],
     description:
-      "1,000-4,000 IU/day of D3 with K2. ~65% of adults are deficient. Critical for immune function, bone health, and overall mortality.",
+      "D3 paired with K2 for optimal absorption. ~65% of adults are deficient. Critical for immune function, bone health, and overall mortality. Consult your doctor for the right amount.",
     citation: "USPSTF review; Multiple RCTs",
     goalAlignment: { lifespan: 8, energy: 6, sleep: 5, body_composition: 4, mental_clarity: 5 },
     timeOfDay: "morning",
   },
   {
     id: "omega-3",
-    name: "Omega-3 Fish Oil (2g EPA+DHA)",
+    name: "Omega-3 Fish Oil",
     category: "Supplementation",
     timeRequired: 1,
     equipment: "None",
@@ -219,7 +219,7 @@ export const protocols: Protocol[] = [
     evidenceStrength: 9,
     outcomes: ["35% lower cardiac mortality", "Reduced inflammation", "Brain health"],
     description:
-      "2g combined EPA+DHA daily. Reduces systemic inflammation and has strong evidence for cardiovascular and brain health.",
+      "Combined EPA+DHA reduces systemic inflammation and has strong evidence for cardiovascular and brain health. Follow product label for serving size.",
     citation: "VITAL trial subgroup analysis",
     goalAlignment: { lifespan: 9, energy: 6, sleep: 5, body_composition: 5, mental_clarity: 8 },
     timeOfDay: "morning",
@@ -235,7 +235,7 @@ export const protocols: Protocol[] = [
     evidenceStrength: 8,
     outcomes: ["Improved sleep quality", "Muscle recovery", "Stress reduction"],
     description:
-      "200-400mg magnesium glycinate before bed. Supports 300+ enzymatic reactions, improves sleep quality, and aids muscle recovery.",
+      "Magnesium glycinate before bed. Supports 300+ enzymatic reactions, improves sleep quality, and aids muscle recovery. Follow product label for serving size.",
     citation: "Abbasi et al., 2012; Multiple studies",
     goalAlignment: { lifespan: 6, energy: 7, sleep: 9, body_composition: 5, mental_clarity: 6 },
     timeOfDay: "evening",
@@ -267,7 +267,7 @@ export const protocols: Protocol[] = [
     evidenceStrength: 7,
     outcomes: ["Muscle protein synthesis", "Satiety", "Body composition"],
     description:
-      "1.6g/kg/day protein distributed across meals, emphasizing leucine-rich sources. Supports muscle maintenance and metabolic health.",
+      "Higher protein intake distributed across meals, emphasizing leucine-rich sources. Supports muscle maintenance and metabolic health. Consult a healthcare provider for the right amount.",
     citation: "Morton et al., 2018; Phillips, 2014",
     goalAlignment: { lifespan: 6, energy: 7, sleep: 4, body_composition: 10, mental_clarity: 5 },
     timeOfDay: "flexible",

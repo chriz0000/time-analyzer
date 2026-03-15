@@ -47,17 +47,59 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Auth failed" }, { status: 401 });
   }
 
+  // --- Subscription-based analysis limits ---
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("subscription_status, subscription_expires_at, free_analysis_used")
+    .eq("id", userId)
+    .single();
+
+  const subStatus = profile?.subscription_status || "free";
+  const subExpired = profile?.subscription_expires_at
+    ? new Date(profile.subscription_expires_at) < new Date()
+    : false;
+  const isPremiumUser = subStatus === "premium" && !subExpired;
+
+  if (!isPremiumUser) {
+    // Free users: 1 total analysis ever
+    if (profile?.free_analysis_used) {
+      return NextResponse.json(
+        { error: "Free plan allows 1 analysis. Upgrade to Premium for more." },
+        { status: 403 },
+      );
+    }
+  } else {
+    // Premium users: 3 analyses per month
+    const now = new Date();
+    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
+    const { count } = await supabase
+      .from("analyses")
+      .select("id", { count: "exact", head: true })
+      .eq("user_id", userId)
+      .gte("created_at", monthStart);
+
+    if ((count || 0) >= 3) {
+      return NextResponse.json(
+        { error: "Monthly analysis limit reached (3/month). Resets next month." },
+        { status: 403 },
+      );
+    }
+  }
+
   const body = await request.json();
   const input: BudgetAnalysisInput = {
     monthlyBudget: Math.max(0, Math.min(Number(body.monthlyBudget) || 100, 10000)),
     currentSpending: Array.isArray(body.currentSpending)
-      ? body.currentSpending.filter((id: unknown) => typeof id === "string" && id.length < 100)
+      ? body.currentSpending.filter((id: unknown) => typeof id === "string" && id.length < 100).slice(0, 50)
       : [],
     primaryGoal: ["lifespan", "performance", "disease_prevention", "aesthetics"].includes(body.primaryGoal)
       ? body.primaryGoal
       : "lifespan",
     sex: ["male", "female", "unspecified"].includes(body.sex) ? body.sex : undefined,
-    ageRange: typeof body.ageRange === "string" ? body.ageRange.slice(0, 10) : undefined,
+    ageRange: (() => {
+      const VALID_AGE_RANGES = ["18-29", "30-39", "40-49", "50-59", "60+"];
+      return typeof body.ageRange === "string" && VALID_AGE_RANGES.includes(body.ageRange) ? body.ageRange : undefined;
+    })(),
     activityLevel: ["low", "moderate", "high"].includes(body.activityLevel) ? body.activityLevel : undefined,
     weight: typeof body.weight === "string" ? body.weight.slice(0, 5).replace(/[^0-9]/g, "") || undefined : undefined,
     height: typeof body.height === "string" ? body.height.slice(0, 5).replace(/[^0-9]/g, "") || undefined : undefined,
@@ -190,9 +232,18 @@ export async function POST(request: NextRequest) {
         primary_goal: input.primaryGoal,
         age_range: input.ageRange,
         result,
+        is_premium: isPremiumUser,
         claude_model: "claude-haiku-4-5-20251001",
       });
       if (insertErr) console.error("Failed to save analysis:", insertErr.message);
+
+      // Mark free analysis as used for free users
+      if (!isPremiumUser) {
+        await supabase
+          .from("profiles")
+          .update({ free_analysis_used: true })
+          .eq("id", userId);
+      }
 
       await writer.write(encoder.encode("\n" + JSON.stringify(result)));
       await writer.close();
@@ -200,7 +251,7 @@ export async function POST(request: NextRequest) {
       const msg = err instanceof Error ? err.message : "Unknown error";
       console.error("Analysis error:", msg);
       try {
-        await writer.write(encoder.encode(JSON.stringify({ error: "Failed to analyze budget", detail: msg })));
+        await writer.write(encoder.encode(JSON.stringify({ error: "Failed to analyze budget" })));
         await writer.close();
       } catch {
         // Writer may already be closed

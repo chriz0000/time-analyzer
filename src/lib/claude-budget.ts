@@ -42,6 +42,7 @@ export interface AnalysisOutput {
     day180: string;
   };
   personalizedInsight: string;
+  longevityScore: number;
   totalMonthlyCost: number;
 }
 
@@ -53,6 +54,7 @@ interface ClaudeRawOutput {
   budgetBreakdown: Record<string, number>;
   roiProjections: { day30: string; day90: string; day180: string };
   personalizedInsight: string;
+  longevityScore: number;
   totalMonthlyCost: number;
 }
 
@@ -64,9 +66,11 @@ BUDGET RULE: The sum of costPerMonth of all items in "protocol" must be 90-100% 
 
 ITEM SELECTION: Pick items that match the user's goal, age, sex, and health concerns. Spread across categories (supplements, equipment, services). Rank by scientific evidence strength.
 
-TEXT RULES: Never mention prices in reasoning/tips/insight — the app shows prices separately. Keep reasoning to 1-2 sentences. Keep implementationTip to 1 sentence.
+TEXT RULES: Never mention prices in reasoning/tips/insight — the app shows prices separately. NEVER include specific dosages (no mg, mcg, IU, g/day, g/kg amounts) — instead say "follow the product label" or "consult a healthcare provider". Keep reasoning to 1-2 sentences. Keep implementationTip to 1 sentence.
 
 ID RULE: investmentId must exactly match the "id" field from the catalog. Copy IDs character-for-character.
+
+LONGEVITY SCORE: Rate the user's overall protocol as a baseline longevity score from 1-100. Consider: budget coverage (higher budget = more tools), evidence strength of selected items, protocol completeness (supplements + exercise + sleep + testing), age-appropriate choices, and how well items address their health concerns. A $25/mo basics-only stack might be 30-45. A $200/mo well-rounded protocol might be 55-75. A $500+ comprehensive protocol with testing + devices might be 75-90. Only 90+ for truly elite full-spectrum stacks.
 
 Return ONLY valid JSON (no markdown, no code fences):
 {
@@ -76,6 +80,7 @@ Return ONLY valid JSON (no markdown, no code fences):
   "budgetBreakdown": {"supplement": 45, "equipment": 20, "blood_work": 15, "protocol": 10, "service": 10},
   "roiProjections": {"day30": "...", "day90": "...", "day180": "..."},
   "personalizedInsight": "...",
+  "longevityScore": 62,
   "totalMonthlyCost": 165
 }`;
 
@@ -139,6 +144,7 @@ export function normalizeOutput(raw: ClaudeRawOutput, budget: number): AnalysisO
     budgetBreakdown: raw.budgetBreakdown ?? {},
     roiProjections: raw.roiProjections ?? { day30: "", day90: "", day180: "" },
     personalizedInsight: raw.personalizedInsight ?? "",
+    longevityScore: Math.min(100, Math.max(1, raw.longevityScore ?? 50)),
     totalMonthlyCost: totalCost,
   };
 }
