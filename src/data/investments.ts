@@ -408,7 +408,7 @@ const tier2: Investment[] = [
     goalAlignment: { lifespan: 10, performance: 7, disease_prevention: 9, aesthetics: 6 },
     products: [
       { name: "SereneLife Portable Infrared Sauna", url: "https://www.amazon.com/dp/B079QXK2TQ?tag=newagelongevi-20", price: "$200", badge: "Best Value" },
-      { name: "ZONEMEL Full Size Portable Sauna", url: "https://www.amazon.com/dp/B0CPXMS4X1?tag=newagelongevi-20", price: "$300", badge: "Home Option" },
+      { name: "ZONEMEL Full Size Portable Sauna", url: "https://www.amazon.com/dp/B07ZX6GCP4?tag=newagelongevi-20", price: "$300", badge: "Home Option" },
     ],
   },
   {
@@ -702,7 +702,7 @@ const tier2: Investment[] = [
     goalAlignment: { lifespan: 7, performance: 9, disease_prevention: 7, aesthetics: 8 },
     products: [
       { name: "Ice Barrel Cold Plunge", url: "https://www.amazon.com/dp/B0DG3S2HTJ?tag=newagelongevi-20", price: "$1,200", badge: "Best Overall" },
-      { name: "Morozko Forge Ice Bath", url: "https://www.amazon.com/dp/B0BYDJKFDQ?tag=newagelongevi-20", price: "$3,400", badge: "Premium" },
+      { name: "Morozko Forge Ice Bath", url: "https://www.morozkoforge.com/product-page/ice-bath", price: "$3,400", badge: "Premium" },
     ],
   },
   {
@@ -886,7 +886,7 @@ const tier2: Investment[] = [
     citation: "Zhang et al., 2020 (fruit/vegetable powder supplementation); Lamprecht et al., 2007",
     goalAlignment: { lifespan: 5, performance: 5, disease_prevention: 6, aesthetics: 4 },
     products: [
-      { name: "AG1 Athletic Greens", url: "https://www.amazon.com/dp/B0CHF1B7HQ?tag=newagelongevi-20", price: "$79/mo", badge: "Most Popular" },
+      { name: "AG1 Athletic Greens", url: "https://www.amazon.com/dp/B084GZNKZQ?tag=newagelongevi-20", price: "$79/mo", badge: "Most Popular" },
       { name: "Amazing Grass Green Superfood", url: "https://www.amazon.com/dp/B00112ILZM?tag=newagelongevi-20", price: "$22", badge: "Best Value" },
     ],
   },
@@ -1049,7 +1049,7 @@ const tier2: Investment[] = [
     products: [
       { name: "Barebells Protein Bars 12pk", url: "https://www.amazon.com/dp/B09PYB4MQS?tag=newagelongevi-20", price: "$30", badge: "Best Overall" },
       { name: "RXBAR Protein Bars 12pk", url: "https://www.amazon.com/dp/B0143NQVP2?tag=newagelongevi-20", price: "$24", badge: "Best Value" },
-      { name: "Built Bar Variety 12pk", url: "https://www.amazon.com/dp/B0C2KZ2VQW?tag=newagelongevi-20", price: "$28" },
+      { name: "Built Bar Variety 12pk", url: "https://built.com/collections/protein-bars", price: "$28" },
     ],
   },
   {
@@ -1190,7 +1190,7 @@ const tier3: Investment[] = [
     citation: "Hamblin, 2017 (Harvard review); Wunsch & Matuschka, 2014 (n=136 RCT)",
     goalAlignment: { lifespan: 5, performance: 6, disease_prevention: 5, aesthetics: 8 },
     products: [
-      { name: "Joovv Go 2.0", url: "https://www.amazon.com/dp/B0BVLDX1Q9?tag=newagelongevi-20", price: "$450", badge: "Best Overall" },
+      { name: "Joovv Go 2.0", url: "https://joovv.com/products/joovv-go-2-0", price: "$450", badge: "Best Overall" },
       { name: "Mito Red Light MitoPRO", url: "https://www.amazon.com/dp/B0CL5KJB7M?tag=newagelongevi-20", price: "$300", badge: "Best Value" },
       { name: "PlatinumLED BioMax", url: "https://www.platinumtherapylights.com", price: "$370" },
     ],
@@ -1811,7 +1811,7 @@ const tier4: Investment[] = [
     goalAlignment: { lifespan: 7, performance: 9, disease_prevention: 8, aesthetics: 7 },
     products: [
       { name: "The Plunge All-In", url: "https://www.plunge.com", price: "$4,990", badge: "Best Overall" },
-      { name: "Morozko Forge Ice Bath", url: "https://www.amazon.com/dp/B0BYDJKFDQ?tag=newagelongevi-20", price: "$3,400" },
+      { name: "Morozko Forge Ice Bath", url: "https://www.morozkoforge.com/product-page/ice-bath", price: "$3,400" },
       { name: "Ice Barrel 400", url: "https://www.amazon.com/dp/B0DG3S2HTJ?tag=newagelongevi-20", price: "$1,200", badge: "Best Value" },
     ],
   },
